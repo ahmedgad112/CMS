@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -26,14 +27,14 @@ class AppointmentController extends Controller
 
         // Filter by department
         if ($request->filled('department_id')) {
-            $query->whereHas('doctor', function($q) use ($request) {
+            $query->whereHas('doctor', function ($q) use ($request) {
                 $q->where('department_id', $request->department_id);
             });
         }
 
         // Filter by specialization
         if ($request->filled('specialization_id')) {
-            $query->whereHas('doctor', function($q) use ($request) {
+            $query->whereHas('doctor', function ($q) use ($request) {
                 $q->where('specialization_id', $request->specialization_id);
             });
         }
@@ -53,9 +54,9 @@ class AppointmentController extends Controller
             $appointmentType = $request->appointment_type;
             // Handle both new appointments with type and old ones without type (default to checkup)
             if ($appointmentType == 'checkup') {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->where('appointment_type', 'checkup')
-                      ->orWhereNull('appointment_type');
+                        ->orWhereNull('appointment_type');
                 });
             } else {
                 $query->where('appointment_type', $appointmentType);
@@ -63,8 +64,9 @@ class AppointmentController extends Controller
         }
 
         // If user is a doctor, show only their appointments
-        if (auth()->user()->isDoctor()) {
-            $query->where('doctor_id', auth()->id());
+        $user = Auth::user();
+        if ($user instanceof User && $user->isDoctor()) {
+            $query->where('doctor_id', Auth::id());
         }
 
         $appointments = $query->latest('appointment_date')->paginate(15);
@@ -99,7 +101,7 @@ class AppointmentController extends Controller
 
         // Combine date and time
         $appointmentDateTime = $validated['appointment_date'] . ' ' . $validated['appointment_time'] . ':00';
-        $appointmentDateTimeObj = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDateTime);
+        $appointmentDateTimeObj = Carbon::createFromFormat('Y-m-d H:i:s', $appointmentDateTime);
 
         // Validate that the appointment is in the future
         if ($appointmentDateTimeObj->isPast()) {
@@ -120,7 +122,7 @@ class AppointmentController extends Controller
 
         unset($validated['appointment_time']);
         $validated['status'] = 'pending';
-        $validated['created_by'] = auth()->id();
+        $validated['created_by'] = Auth::id();
 
         Appointment::create($validated);
 
@@ -129,12 +131,14 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
+        $this->authorizeDoctorAppointment($appointment);
         $appointment->load(['patient', 'doctor', 'creator', 'prescription', 'invoice']);
         return view('appointments.show', compact('appointment'));
     }
 
     public function edit(Appointment $appointment)
     {
+        $this->authorizeDoctorAppointment($appointment);
         $patients = Patient::latest()->get();
         $doctors = User::where('role', 'doctor')->where('is_active', true)->get();
 
@@ -143,19 +147,21 @@ class AppointmentController extends Controller
 
     public function update(Request $request, Appointment $appointment)
     {
+        $this->authorizeDoctorAppointment($appointment);
+
         // If only status is being updated (quick action)
         if ($request->has('status') && !$request->has('patient_id') && !$request->has('doctor_id') && !$request->has('appointment_date')) {
             $validated = $request->validate([
                 'status' => 'required|in:pending,confirmed,completed,canceled',
             ]);
-            
+
             $appointment->update($validated);
-            
+
             return redirect()->route('appointments.show', $appointment->id)
                 ->with('success', 'تم تحديث حالة الموعد بنجاح.');
         }
 
-        // Full update
+        // Full update (appointment_date comes as datetime-local: Y-m-d\TH:i)
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:users,id',
@@ -165,17 +171,18 @@ class AppointmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // Check for conflicts (excluding current appointment)
-        if ($request->has('appointment_date') || $request->has('doctor_id')) {
-            $conflict = Appointment::where('doctor_id', $validated['doctor_id'])
-                ->where('appointment_date', $validated['appointment_date'])
-                ->where('id', '!=', $appointment->id)
-                ->whereIn('status', ['pending', 'confirmed'])
-                ->exists();
+        $appointmentDateTimeObj = Carbon::parse($validated['appointment_date']);
+        $validated['appointment_date'] = $appointmentDateTimeObj;
 
-            if ($conflict) {
-                return back()->withErrors(['appointment_date' => 'This time slot is already booked.'])->withInput();
-            }
+        // Check for conflicts (excluding current appointment)
+        $conflict = Appointment::where('doctor_id', $validated['doctor_id'])
+            ->where('appointment_date', $appointmentDateTimeObj)
+            ->where('id', '!=', $appointment->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($conflict) {
+            return back()->withErrors(['appointment_date' => 'هذا الموعد محجوز مسبقاً.'])->withInput();
         }
 
         $appointment->update($validated);
@@ -186,11 +193,24 @@ class AppointmentController extends Controller
 
     public function destroy(Appointment $appointment)
     {
+        $this->authorizeDoctorAppointment($appointment);
+
         if ($appointment->status === 'completed') {
-            return back()->withErrors(['error' => 'Cannot delete a completed appointment.']);
+            return back()->withErrors(['error' => 'لا يمكن حذف موعد مكتمل.']);
         }
 
         $appointment->delete();
-        return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
+        return redirect()->route('appointments.index')->with('success', 'تم حذف الموعد بنجاح.');
+    }
+
+    /**
+     * Ensure doctors can only access their own appointments; admins/others can access any.
+     */
+    private function authorizeDoctorAppointment(Appointment $appointment): void
+    {
+        $user = Auth::user();
+        if ($user instanceof User && $user->isDoctor() && $appointment->doctor_id !== Auth::id()) {
+            abort(403, 'غير مصرح لك بالوصول لهذا الموعد.');
+        }
     }
 }

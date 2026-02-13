@@ -746,6 +746,27 @@
                 -webkit-overflow-scrolling: touch;
             }
 
+            /* Responsive list cards (mobile) */
+            .responsive-list-cards {
+                padding-bottom: 0.5rem;
+            }
+            .list-card {
+                border-radius: 12px;
+                transition: box-shadow 0.2s ease, transform 0.2s ease;
+                position: relative;
+            }
+            .list-card-hover:hover {
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
+            }
+            .list-card-actions {
+                position: relative;
+                z-index: 1;
+            }
+            .list-card-actions .btn {
+                flex: 1;
+                min-width: fit-content;
+            }
+
             /* Stack form columns */
             .row.g-4 > [class*="col-"] {
                 margin-bottom: 1rem;

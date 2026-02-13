@@ -169,75 +169,93 @@
             </div>
         </form>
 
-        <!-- Appointments Table -->
+        <!-- Appointments List: table on md+, cards on small screens -->
         @if($appointments->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>المريض</th>
-                        <th>الطبيب</th>
-                        <th>التاريخ والوقت</th>
-                        <th>النوع</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($appointments as $appointment)
-                    <tr>
-                        <td>{{ $loop->iteration + ($appointments->currentPage() - 1) * $appointments->perPage() }}</td>
-                        <td>
-                            <a href="{{ route('patients.show', $appointment->patient_id) }}" class="text-decoration-none">
-                                {{ $appointment->patient->full_name }}
-                            </a>
-                        </td>
-                        <td>{{ $appointment->doctor->name }}</td>
-                        <td>{{ $appointment->appointment_date->format('Y-m-d H:i') }}</td>
-                        <td>
-                            @if(($appointment->appointment_type ?? 'checkup') == 'checkup')
-                                <span class="badge bg-primary">
-                                    <i class="fas fa-stethoscope me-1"></i>كشف
-                                </span>
-                            @else
-                                <span class="badge bg-info">
-                                    <i class="fas fa-comments me-1"></i>استشارة
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($appointment->status == 'pending')
-                                <span class="badge bg-warning">معلق</span>
-                            @elseif($appointment->status == 'confirmed')
-                                <span class="badge bg-info">مؤكد</span>
-                            @elseif($appointment->status == 'completed')
-                                <span class="badge bg-success">مكتمل</span>
-                            @else
-                                <span class="badge bg-danger">ملغي</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('appointments.show', $appointment->id) }}" 
-                                   class="btn btn-sm btn-info" 
-                                   title="عرض">
-                                    <i class="fas fa-eye"></i>
+        <x-responsive-list>
+            <x-slot:table>
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المريض</th>
+                            <th>الطبيب</th>
+                            <th>التاريخ والوقت</th>
+                            <th>النوع</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($appointments as $appointment)
+                        <tr>
+                            <td>{{ $loop->iteration + ($appointments->currentPage() - 1) * $appointments->perPage() }}</td>
+                            <td>
+                                <a href="{{ route('patients.show', $appointment->patient_id) }}" class="text-decoration-none">
+                                    {{ $appointment->patient->full_name }}
                                 </a>
-                                @if(auth()->user()->canManageAppointments())
-                                <a href="{{ route('appointments.edit', $appointment->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="تعديل">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                            </td>
+                            <td>{{ $appointment->doctor->name }}</td>
+                            <td>{{ $appointment->appointment_date->format('Y-m-d H:i') }}</td>
+                            <td>
+                                @if(($appointment->appointment_type ?? 'checkup') == 'checkup')
+                                    <span class="badge bg-primary"><i class="fas fa-stethoscope me-1"></i>كشف</span>
+                                @else
+                                    <span class="badge bg-info"><i class="fas fa-comments me-1"></i>استشارة</span>
                                 @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </td>
+                            <td>
+                                @if($appointment->status == 'pending')
+                                    <span class="badge bg-warning">معلق</span>
+                                @elseif($appointment->status == 'confirmed')
+                                    <span class="badge bg-info">مؤكد</span>
+                                @elseif($appointment->status == 'completed')
+                                    <span class="badge bg-success">مكتمل</span>
+                                @else
+                                    <span class="badge bg-danger">ملغي</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('appointments.show', $appointment->id) }}" class="btn btn-sm btn-info" title="عرض"><i class="fas fa-eye"></i></a>
+                                    @if(auth()->user()->canManageAppointments())
+                                    <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-sm btn-warning" title="تعديل"><i class="fas fa-edit"></i></a>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </x-slot:table>
+            <x-slot:cards>
+                @php
+                    $statusLabels = ['pending' => 'معلق', 'confirmed' => 'مؤكد', 'completed' => 'مكتمل', 'canceled' => 'ملغي'];
+                    $statusVariants = ['pending' => 'warning', 'confirmed' => 'info', 'completed' => 'success', 'canceled' => 'danger'];
+                @endphp
+                @foreach($appointments as $appointment)
+                <x-list-card
+                    :title="$appointment->patient->full_name"
+                    :title-url="route('patients.show', $appointment->patient_id)"
+                    :badge="$statusLabels[$appointment->status] ?? 'ملغي'"
+                    :badge-variant="$statusVariants[$appointment->status] ?? 'danger'"
+                >
+                    <x-slot:fields>
+                        <x-list-card-field label="الطبيب" icon="fas fa-user-md">{{ $appointment->doctor->name }}</x-list-card-field>
+                        <x-list-card-field label="التاريخ والوقت" icon="fas fa-calendar-alt">{{ $appointment->appointment_date->format('Y-m-d H:i') }}</x-list-card-field>
+                        <x-list-card-field label="النوع" icon="fas fa-tag">
+                            {{ ($appointment->appointment_type ?? 'checkup') == 'checkup' ? 'كشف' : 'استشارة' }}
+                        </x-list-card-field>
+                    </x-slot:fields>
+                    <x-slot:actions>
+                        <a href="{{ route('appointments.show', $appointment->id) }}" class="btn btn-sm btn-info" title="عرض"><i class="fas fa-eye me-1"></i>عرض</a>
+                        @if(auth()->user()->canManageAppointments())
+                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-sm btn-warning" title="تعديل"><i class="fas fa-edit me-1"></i>تعديل</a>
+                        @endif
+                    </x-slot:actions>
+                </x-list-card>
+                @endforeach
+            </x-slot:cards>
+        </x-responsive-list>
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center">

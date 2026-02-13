@@ -304,136 +304,113 @@
 </style>
 @endpush
 
-        <!-- Invoices Table -->
+        <!-- Invoices List: table on md+, cards on small screens -->
         @if($invoices->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th width="50">#</th>
-                        <th>رقم الفاتورة</th>
-                        <th>المريض</th>
-                        <th>المبلغ الإجمالي</th>
-                        <th>المدفوع</th>
-                        <th>المتبقي</th>
-                        <th>تاريخ الإنشاء</th>
-                        <th width="100">الحالة</th>
-                        <th width="150" class="text-center">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoices as $invoice)
-                    <tr>
-                        <td class="text-muted">{{ $loop->iteration + ($invoices->currentPage() - 1) * $invoices->perPage() }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 35px; height: 35px; font-size: 0.875rem;">
-                                    <i class="fas fa-file-invoice"></i>
-                                </div>
-                                <div>
-                                    <strong class="text-primary">{{ $invoice->invoice_number }}</strong>
-                                    @if($invoice->appointment)
-                                    <div class="small text-muted">
-                                        <i class="fas fa-calendar-check me-1"></i>
-                                        مرتبطة بموعد
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 35px; height: 35px; font-size: 0.875rem;">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div>
-                                    <a href="{{ route('patients.show', $invoice->patient_id) }}" 
-                                       class="text-decoration-none fw-bold">
-                                        {{ $invoice->patient->full_name }}
-                                    </a>
-                                    <div class="small text-muted">
-                                        <i class="fas fa-phone me-1"></i>
-                                        {{ $invoice->patient->phone_number }}
+        <x-responsive-list>
+            <x-slot:table>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>رقم الفاتورة</th>
+                            <th>المريض</th>
+                            <th>المبلغ الإجمالي</th>
+                            <th>المدفوع</th>
+                            <th>المتبقي</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th width="100">الحالة</th>
+                            <th width="150" class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invoices as $invoice)
+                        <tr>
+                            <td class="text-muted">{{ $loop->iteration + ($invoices->currentPage() - 1) * $invoices->perPage() }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; font-size: 0.875rem;"><i class="fas fa-file-invoice"></i></div>
+                                    <div>
+                                        <strong class="text-primary">{{ $invoice->invoice_number }}</strong>
+                                        @if($invoice->appointment)<div class="small text-muted"><i class="fas fa-calendar-check me-1"></i>مرتبطة بموعد</div>@endif
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            <strong class="text-primary">{{ number_format($invoice->total_amount, 2) }} <small class="text-muted">ج.م</small></strong>
-                        </td>
-                        <td>
-                            <span class="text-success fw-bold">{{ number_format($invoice->paid_amount, 2) }} <small class="text-muted">ج.م</small></span>
-                        </td>
-                        <td>
-                            @if($invoice->remaining_amount > 0)
-                                <span class="text-danger fw-bold">
-                                    <i class="fas fa-exclamation-circle me-1"></i>
-                                    {{ number_format($invoice->remaining_amount, 2) }} <small class="text-muted">ج.م</small>
-                                </span>
-                            @else
-                                <span class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>
-                                    0.00 <small class="text-muted">ج.م</small>
-                                </span>
-                            @endif
-                        </td>
-                        <td class="text-muted">
-                            <i class="fas fa-calendar me-1"></i>
-                            {{ $invoice->created_at->format('Y-m-d') }}
-                        </td>
-                        <td>
-                            @if($invoice->status == 'paid')
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle me-1"></i> مدفوعة
-                                </span>
-                            @else
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-clock me-1"></i> غير مدفوعة
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <a href="{{ route('invoices.show', $invoice->id) }}" 
-                                   class="btn btn-info" 
-                                   title="عرض التفاصيل">
-                                    <i class="fas fa-eye"></i>
-                                    <span class="d-none d-md-inline ms-1">عرض</span>
-                                </a>
-                                @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
-                                @if($invoice->status == 'unpaid')
-                                <a href="{{ route('invoices.edit', $invoice->id) }}" 
-                                   class="btn btn-warning" 
-                                   title="تعديل">
-                                    <i class="fas fa-edit"></i>
-                                    <span class="d-none d-md-inline ms-1">تعديل</span>
-                                </a>
-                                @endif
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; font-size: 0.875rem;"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <a href="{{ route('patients.show', $invoice->patient_id) }}" class="text-decoration-none fw-bold">{{ $invoice->patient->full_name }}</a>
+                                        <div class="small text-muted"><i class="fas fa-phone me-1"></i>{{ $invoice->patient->phone_number }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong class="text-primary">{{ number_format($invoice->total_amount, 2) }} <small class="text-muted">ج.م</small></strong></td>
+                            <td><span class="text-success fw-bold">{{ number_format($invoice->paid_amount, 2) }} <small class="text-muted">ج.م</small></span></td>
+                            <td>
                                 @if($invoice->remaining_amount > 0)
-                                <a href="{{ route('payments.create', ['invoice_id' => $invoice->id]) }}" 
-                                   class="btn btn-success" 
-                                   title="تسجيل دفعة">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                    <span class="d-none d-md-inline ms-1">دفع</span>
-                                </a>
+                                    <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ number_format($invoice->remaining_amount, 2) }} <small class="text-muted">ج.م</small></span>
+                                @else
+                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>0.00 <small class="text-muted">ج.م</small></span>
                                 @endif
+                            </td>
+                            <td class="text-muted"><i class="fas fa-calendar me-1"></i>{{ $invoice->created_at->format('Y-m-d') }}</td>
+                            <td>
+                                @if($invoice->status == 'paid')
+                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> مدفوعة</span>
+                                @else
+                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> غير مدفوعة</span>
                                 @endif
-                                <a href="{{ route('invoices.print', $invoice->id) }}" 
-                                   class="btn btn-primary" 
-                                   title="طباعة"
-                                   target="_blank">
-                                    <i class="fas fa-print"></i>
-                                    <span class="d-none d-md-inline ms-1">طباعة</span>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-info" title="عرض"><i class="fas fa-eye"></i><span class="d-none d-md-inline ms-1">عرض</span></a>
+                                    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
+                                    @if($invoice->status == 'unpaid')
+                                    <a href="{{ route('invoices.edit', $invoice->id) }}" class="btn btn-warning" title="تعديل"><i class="fas fa-edit"></i><span class="d-none d-md-inline ms-1">تعديل</span></a>
+                                    @endif
+                                    @if($invoice->remaining_amount > 0)
+                                    <a href="{{ route('payments.create', ['invoice_id' => $invoice->id]) }}" class="btn btn-success" title="دفع"><i class="fas fa-money-bill-wave"></i><span class="d-none d-md-inline ms-1">دفع</span></a>
+                                    @endif
+                                    @endif
+                                    <a href="{{ route('invoices.print', $invoice->id) }}" class="btn btn-primary" title="طباعة" target="_blank"><i class="fas fa-print"></i><span class="d-none d-md-inline ms-1">طباعة</span></a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </x-slot:table>
+            <x-slot:cards>
+                @foreach($invoices as $invoice)
+                <x-list-card
+                    :title="$invoice->invoice_number"
+                    :title-url="route('invoices.show', $invoice->id)"
+                    :badge="$invoice->status == 'paid' ? 'مدفوعة' : 'غير مدفوعة'"
+                    :badge-variant="$invoice->status == 'paid' ? 'success' : 'warning'"
+                >
+                    <x-slot:fields>
+                        <x-list-card-field label="المريض" icon="fas fa-user">{{ $invoice->patient->full_name }}</x-list-card-field>
+                        <x-list-card-field label="الإجمالي" icon="fas fa-coins">{{ number_format($invoice->total_amount, 2) }} ج.م</x-list-card-field>
+                        <x-list-card-field label="المدفوع" icon="fas fa-check-circle">{{ number_format($invoice->paid_amount, 2) }} ج.م</x-list-card-field>
+                        <x-list-card-field label="المتبقي" icon="fas fa-exclamation-circle">{{ number_format($invoice->remaining_amount, 2) }} ج.م</x-list-card-field>
+                        <x-list-card-field label="التاريخ" icon="fas fa-calendar">{{ $invoice->created_at->format('Y-m-d') }}</x-list-card-field>
+                    </x-slot:fields>
+                    <x-slot:actions>
+                        <a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye me-1"></i>عرض</a>
+                        @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
+                        @if($invoice->status == 'unpaid')
+                        <a href="{{ route('invoices.edit', $invoice->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit me-1"></i>تعديل</a>
+                        @endif
+                        @if($invoice->remaining_amount > 0)
+                        <a href="{{ route('payments.create', ['invoice_id' => $invoice->id]) }}" class="btn btn-sm btn-success"><i class="fas fa-money-bill-wave me-1"></i>دفع</a>
+                        @endif
+                        @endif
+                        <a href="{{ route('invoices.print', $invoice->id) }}" class="btn btn-sm btn-primary" target="_blank"><i class="fas fa-print me-1"></i>طباعة</a>
+                    </x-slot:actions>
+                </x-list-card>
+                @endforeach
+            </x-slot:cards>
+        </x-responsive-list>
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center">

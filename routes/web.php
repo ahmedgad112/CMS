@@ -53,26 +53,55 @@ Route::middleware('auth')->group(function () {
         ]);
     });
 
+    Route::get('api/doctor/{doctor}/booked-slots', function ($doctorId) {
+        $start = now()->startOfDay();
+        $end = now()->addDays(30)->endOfDay();
+        $slots = \App\Models\Appointment::where('doctor_id', $doctorId)
+            ->whereBetween('appointment_date', [$start, $end])
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->get()
+            ->map(function ($apt) {
+                return [
+                    'date' => $apt->appointment_date->format('Y-m-d'),
+                    'time' => $apt->appointment_date->format('H:i'),
+                ];
+            });
+        return response()->json(['booked_slots' => $slots]);
+    });
+
     Route::get('api/patients/search', function (Request $request) {
-        $phone = $request->get('phone');
+        $q = trim((string) ($request->get('q') ?: $request->get('phone')));
         $id = $request->get('id');
-        
+
         $query = \App\Models\Patient::query();
-        
+
         if ($id) {
             $query->where('id', $id);
-        } elseif ($phone && strlen($phone) >= 2) {
-            $query->where(function($q) use ($phone) {
-                $q->where('phone_number', 'like', "%{$phone}%")
-                  ->orWhere('full_name', 'like', "%{$phone}%");
+        } elseif ($q !== '' && mb_strlen($q) >= 2) {
+            $term = '%' . $q . '%';
+            $query->where(function ($qb) use ($term, $q) {
+                $qb->where('full_name', 'like', $term)
+                    ->orWhere('phone_number', 'like', $term)
+                    ->orWhere('national_id', 'like', $term);
             });
+            // ترتيب النتائج: تطابق كامل للهاتف أولاً، ثم الاسم يبدأ بالبحث، ثم الباقي
+            $query->orderByRaw(
+                "CASE
+                    WHEN phone_number = ? THEN 0
+                    WHEN phone_number LIKE ? THEN 1
+                    WHEN full_name LIKE ? THEN 2
+                    WHEN national_id LIKE ? THEN 3
+                    ELSE 4
+                END",
+                [$q, $q . '%', $q . '%', $q . '%']
+            );
         } else {
             return response()->json(['patients' => []]);
         }
-        
-        $patients = $query->limit(10)
-            ->get(['id', 'full_name', 'phone_number', 'gender', 'age']);
-        
+
+        $patients = $query->limit(15)
+            ->get(['id', 'full_name', 'phone_number', 'national_id', 'gender', 'age']);
+
         return response()->json(['patients' => $patients]);
     });
 

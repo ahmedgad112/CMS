@@ -88,95 +88,91 @@
                     </div>
                 </form>
 
-                <!-- Patients Table -->
+                <!-- Patients List: table on md+, cards on small screens -->
                 @if($patients->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th width="60">#</th>
-                                <th>الاسم الكامل</th>
-                                <th>رقم الهاتف</th>
-                                <th width="100">الجنس</th>
-                                <th width="80">العمر</th>
-                                <th width="120">تاريخ الإضافة</th>
-                                <th width="200" class="text-center">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($patients as $patient)
-                            <tr>
-                                <td class="text-muted">
-                                    <strong>{{ $loop->iteration + ($patients->currentPage() - 1) * $patients->perPage() }}</strong>
-                                </td>
-                                <td>
-                                    <a href="{{ route('patients.show', $patient->id) }}" class="text-decoration-none fw-semibold text-dark">
-                                        {{ $patient->full_name }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="tel:{{ $patient->phone_number }}" class="text-decoration-none">
-                                        <i class="fas fa-phone me-1 text-primary"></i>
-                                        {{ $patient->phone_number }}
-                                    </a>
-                                </td>
-                                <td>
-                                    @if($patient->gender == 'male')
-                                        <span class="badge bg-primary-subtle text-primary border border-primary">
-                                            <i class="fas fa-mars me-1"></i>ذكر
-                                        </span>
-                                    @else
-                                        <span class="badge bg-danger-subtle text-danger border border-danger">
-                                            <i class="fas fa-venus me-1"></i>أنثى
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="text-muted">
-                                        <i class="fas fa-birthday-cake me-1"></i>
-                                        {{ $patient->age }} سنة
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="text-muted small">
-                                        <i class="fas fa-calendar me-1"></i>
-                                        {{ $patient->created_at->format('Y-m-d') }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('patients.show', $patient->id) }}" 
-                                           class="btn btn-sm btn-outline-info" 
-                                           title="عرض التفاصيل">
-                                            <i class="fas fa-eye"></i>
-                                            <span class="d-none d-lg-inline ms-1">عرض</span>
+                <x-responsive-list>
+                    <x-slot:table>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="60">#</th>
+                                    <th>الاسم الكامل</th>
+                                    <th>رقم الهاتف</th>
+                                    <th width="100">الجنس</th>
+                                    <th width="80">العمر</th>
+                                    <th width="120">تاريخ الإضافة</th>
+                                    <th width="200" class="text-center">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($patients as $patient)
+                                <tr>
+                                    <td class="text-muted"><strong>{{ $loop->iteration + ($patients->currentPage() - 1) * $patients->perPage() }}</strong></td>
+                                    <td>
+                                        <a href="{{ route('patients.show', $patient->id) }}" class="text-decoration-none fw-semibold text-dark">{{ $patient->full_name }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="tel:{{ $patient->phone_number }}" class="text-decoration-none">
+                                            <i class="fas fa-phone me-1 text-primary"></i>{{ $patient->phone_number }}
                                         </a>
-                                        @if(auth()->user()->canManagePatients())
-                                        <a href="{{ route('patients.edit', $patient->id) }}" 
-                                           class="btn btn-sm btn-outline-warning" 
-                                           title="تعديل">
-                                            <i class="fas fa-edit"></i>
-                                            <span class="d-none d-lg-inline ms-1">تعديل</span>
-                                        </a>
-                                        <form action="{{ route('patients.destroy', $patient->id) }}" 
-                                              method="POST" 
-                                              class="d-inline"
-                                              onsubmit="return confirm('هل أنت متأكد من حذف المريض {{ $patient->full_name }}؟');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف">
-                                                <i class="fas fa-trash"></i>
-                                                <span class="d-none d-lg-inline ms-1">حذف</span>
-                                            </button>
-                                        </form>
+                                    </td>
+                                    <td>
+                                        @if($patient->gender == 'male')
+                                            <span class="badge bg-primary-subtle text-primary border border-primary"><i class="fas fa-mars me-1"></i>ذكر</span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger border border-danger"><i class="fas fa-venus me-1"></i>أنثى</span>
                                         @endif
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td><span class="text-muted"><i class="fas fa-birthday-cake me-1"></i>{{ $patient->age }} سنة</span></td>
+                                    <td><span class="text-muted small"><i class="fas fa-calendar me-1"></i>{{ $patient->created_at->format('Y-m-d') }}</span></td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-outline-info" title="عرض"><i class="fas fa-eye"></i><span class="d-none d-lg-inline ms-1">عرض</span></a>
+                                            @if(auth()->user()->canManagePatients())
+                                            <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-outline-warning" title="تعديل"><i class="fas fa-edit"></i><span class="d-none d-lg-inline ms-1">تعديل</span></a>
+                                            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف المريض {{ $patient->full_name }}؟');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف"><i class="fas fa-trash"></i><span class="d-none d-lg-inline ms-1">حذف</span></button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </x-slot:table>
+                    <x-slot:cards>
+                        @foreach($patients as $patient)
+                        <x-list-card
+                            :title="$patient->full_name"
+                            :title-url="route('patients.show', $patient->id)"
+                            :badge="$patient->gender == 'male' ? 'ذكر' : 'أنثى'"
+                            :badge-variant="$patient->gender == 'male' ? 'primary' : 'danger'"
+                        >
+                            <x-slot:fields>
+                                <x-list-card-field label="رقم الهاتف" icon="fas fa-phone">
+                                    <a href="tel:{{ $patient->phone_number }}" class="text-decoration-none">{{ $patient->phone_number }}</a>
+                                </x-list-card-field>
+                                <x-list-card-field label="العمر" icon="fas fa-birthday-cake">{{ $patient->age }} سنة</x-list-card-field>
+                                <x-list-card-field label="تاريخ الإضافة" icon="fas fa-calendar">{{ $patient->created_at->format('Y-m-d') }}</x-list-card-field>
+                            </x-slot:fields>
+                            <x-slot:actions>
+                                <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-outline-info"><i class="fas fa-eye me-1"></i>عرض</a>
+                                @if(auth()->user()->canManagePatients())
+                                <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit me-1"></i>تعديل</a>
+                                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف المريض؟');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i>حذف</button>
+                                </form>
+                                @endif
+                            </x-slot:actions>
+                        </x-list-card>
+                        @endforeach
+                    </x-slot:cards>
+                </x-responsive-list>
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-3">

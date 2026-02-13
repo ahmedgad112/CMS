@@ -58,80 +58,75 @@
         </form>
 
         @if($prescriptions->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th width="50">#</th>
-                        <th>المريض</th>
-                        <th>تاريخ الزيارة</th>
-                        <th>عدد الأدوية</th>
-                        <th>تاريخ الوصفة</th>
-                        <th width="150" class="text-center">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($prescriptions as $prescription)
-                    <tr>
-                        <td class="text-muted">{{ $loop->iteration + ($prescriptions->currentPage() - 1) * $prescriptions->perPage() }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 35px; height: 35px; font-size: 0.875rem;">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div>
-                                    <a href="{{ route('patients.show', $prescription->patient_id) }}" 
-                                       class="text-decoration-none fw-bold">
-                                        {{ $prescription->patient->full_name }}
-                                    </a>
-                                    <div class="small text-muted">
-                                        <i class="fas fa-phone me-1"></i>
-                                        {{ $prescription->patient->phone_number }}
+        <x-responsive-list>
+            <x-slot:table>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">#</th>
+                            <th>المريض</th>
+                            <th>تاريخ الزيارة</th>
+                            <th>عدد الأدوية</th>
+                            <th>تاريخ الوصفة</th>
+                            <th width="150" class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($prescriptions as $prescription)
+                        <tr>
+                            <td class="text-muted">{{ $loop->iteration + ($prescriptions->currentPage() - 1) * $prescriptions->perPage() }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; font-size: 0.875rem;"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <a href="{{ route('patients.show', $prescription->patient_id) }}" class="text-decoration-none fw-bold">{{ $prescription->patient->full_name }}</a>
+                                        <div class="small text-muted"><i class="fas fa-phone me-1"></i>{{ $prescription->patient->phone_number }}</div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            @if($prescription->appointment)
-                                <i class="fas fa-calendar-check text-primary me-1"></i>
-                                {{ $prescription->appointment->appointment_date->format('Y-m-d H:i') }}
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="badge bg-info">
-                                <i class="fas fa-pills me-1"></i>
-                                {{ $prescription->items->count() }}
-                            </span>
-                        </td>
-                        <td class="text-muted">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ $prescription->created_at->format('Y-m-d') }}
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <a href="{{ route('doctor.prescriptions.show', $prescription->id) }}" 
-                                   class="btn btn-info" 
-                                   title="عرض">
-                                    <i class="fas fa-eye"></i>
-                                    <span class="d-none d-md-inline ms-1">عرض</span>
-                                </a>
-                                <a href="{{ route('doctor.prescriptions.print', $prescription->id) }}" 
-                                   class="btn btn-primary" 
-                                   title="طباعة"
-                                   target="_blank">
-                                    <i class="fas fa-print"></i>
-                                    <span class="d-none d-md-inline ms-1">طباعة</span>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </td>
+                            <td>
+                                @if($prescription->appointment)
+                                    <i class="fas fa-calendar-check text-primary me-1"></i>{{ $prescription->appointment->appointment_date->format('Y-m-d H:i') }}
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td><span class="badge bg-info"><i class="fas fa-pills me-1"></i>{{ $prescription->items->count() }}</span></td>
+                            <td class="text-muted"><i class="fas fa-clock me-1"></i>{{ $prescription->created_at->format('Y-m-d') }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('doctor.prescriptions.show', $prescription->id) }}" class="btn btn-info" title="عرض"><i class="fas fa-eye"></i><span class="d-none d-md-inline ms-1">عرض</span></a>
+                                    <a href="{{ route('doctor.prescriptions.print', $prescription->id) }}" class="btn btn-primary" title="طباعة" target="_blank"><i class="fas fa-print"></i><span class="d-none d-md-inline ms-1">طباعة</span></a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </x-slot:table>
+            <x-slot:cards>
+                @foreach($prescriptions as $prescription)
+                <x-list-card
+                    :title="$prescription->patient->full_name"
+                    :title-url="route('patients.show', $prescription->patient_id)"
+                    :badge="'أدوية: ' . $prescription->items->count()"
+                    badge-variant="info"
+                >
+                    <x-slot:fields>
+                        <x-list-card-field label="الهاتف" icon="fas fa-phone">{{ $prescription->patient->phone_number }}</x-list-card-field>
+                        <x-list-card-field label="تاريخ الزيارة" icon="fas fa-calendar-check">
+                            {{ $prescription->appointment ? $prescription->appointment->appointment_date->format('Y-m-d H:i') : '-' }}
+                        </x-list-card-field>
+                        <x-list-card-field label="تاريخ الوصفة" icon="fas fa-clock">{{ $prescription->created_at->format('Y-m-d') }}</x-list-card-field>
+                    </x-slot:fields>
+                    <x-slot:actions>
+                        <a href="{{ route('doctor.prescriptions.show', $prescription->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye me-1"></i>عرض</a>
+                        <a href="{{ route('doctor.prescriptions.print', $prescription->id) }}" class="btn btn-sm btn-primary" target="_blank"><i class="fas fa-print me-1"></i>طباعة</a>
+                    </x-slot:actions>
+                </x-list-card>
+                @endforeach
+            </x-slot:cards>
+        </x-responsive-list>
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">

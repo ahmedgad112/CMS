@@ -135,65 +135,73 @@
             </div>
         </form>
 
-        <!-- Payments Table -->
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>رقم الفاتورة</th>
-                        <th>اسم المريض</th>
-                        <th>المبلغ</th>
-                        <th>طريقة الدفع</th>
-                        <th>التاريخ والوقت</th>
-                        <th>المستلم</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($payments as $payment)
-                    <tr>
-                        <td>{{ $payment->id }}</td>
-                        <td>
-                            <i class="fas fa-file-invoice me-1 text-muted"></i>
-                            <a href="{{ route('invoices.show', $payment->invoice_id) }}" class="text-decoration-none">
-                                {{ $payment->invoice->invoice_number }}
-                            </a>
-                        </td>
-                        <td>
-                            <i class="fas fa-user me-1 text-muted"></i>
-                            {{ $payment->invoice->patient->full_name }}
-                        </td>
-                        <td class="fw-bold text-primary">{{ number_format($payment->amount, 2) }} ج.م</td>
-                        <td>
-                            @if($payment->payment_method == 'cash')
-                                <span class="badge bg-success">نقدي</span>
-                            @else
-                                <span class="badge bg-info">بطاقة ائتمان</span>
-                            @endif
-                        </td>
-                        <td>
-                            <i class="fas fa-calendar me-1 text-muted"></i>
-                            {{ $payment->created_at->format('Y-m-d') }}
-                            <br>
-                            <small class="text-muted">{{ $payment->created_at->format('H:i') }}</small>
-                        </td>
-                        <td>
-                            <i class="fas fa-user me-1 text-muted"></i>
-                            {{ $payment->receiver->name }}
-                        </td>
-                        <td>
-                            <a href="{{ route('payments.show', $payment->id) }}" 
-                               class="btn btn-sm btn-info" 
-                               title="عرض التفاصيل">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        <!-- Payments List: table on md+, cards on small screens -->
+        <x-responsive-list>
+            <x-slot:table>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>رقم الفاتورة</th>
+                            <th>اسم المريض</th>
+                            <th>المبلغ</th>
+                            <th>طريقة الدفع</th>
+                            <th>التاريخ والوقت</th>
+                            <th>المستلم</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($payments as $payment)
+                        <tr>
+                            <td>{{ $payment->id }}</td>
+                            <td>
+                                <i class="fas fa-file-invoice me-1 text-muted"></i>
+                                <a href="{{ route('invoices.show', $payment->invoice_id) }}" class="text-decoration-none">{{ $payment->invoice->invoice_number }}</a>
+                            </td>
+                            <td><i class="fas fa-user me-1 text-muted"></i>{{ $payment->invoice->patient->full_name }}</td>
+                            <td class="fw-bold text-primary">{{ number_format($payment->amount, 2) }} ج.م</td>
+                            <td>
+                                @if($payment->payment_method == 'cash')
+                                    <span class="badge bg-success">نقدي</span>
+                                @else
+                                    <span class="badge bg-info">بطاقة ائتمان</span>
+                                @endif
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar me-1 text-muted"></i>{{ $payment->created_at->format('Y-m-d') }}
+                                <br><small class="text-muted">{{ $payment->created_at->format('H:i') }}</small>
+                            </td>
+                            <td><i class="fas fa-user me-1 text-muted"></i>{{ $payment->receiver->name }}</td>
+                            <td>
+                                <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-sm btn-info" title="عرض"><i class="fas fa-eye"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </x-slot:table>
+            <x-slot:cards>
+                @foreach($payments as $payment)
+                <x-list-card
+                    :title="$payment->invoice->invoice_number"
+                    :title-url="route('invoices.show', $payment->invoice_id)"
+                    :badge="$payment->payment_method == 'cash' ? 'نقدي' : 'بطاقة ائتمان'"
+                    :badge-variant="$payment->payment_method == 'cash' ? 'success' : 'info'"
+                >
+                    <x-slot:fields>
+                        <x-list-card-field label="المريض" icon="fas fa-user">{{ $payment->invoice->patient->full_name }}</x-list-card-field>
+                        <x-list-card-field label="المبلغ" icon="fas fa-coins">{{ number_format($payment->amount, 2) }} ج.م</x-list-card-field>
+                        <x-list-card-field label="التاريخ" icon="fas fa-calendar">{{ $payment->created_at->format('Y-m-d H:i') }}</x-list-card-field>
+                        <x-list-card-field label="المستلم" icon="fas fa-user-tie">{{ $payment->receiver->name }}</x-list-card-field>
+                    </x-slot:fields>
+                    <x-slot:actions>
+                        <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye me-1"></i>عرض</a>
+                    </x-slot:actions>
+                </x-list-card>
+                @endforeach
+            </x-slot:cards>
+        </x-responsive-list>
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
