@@ -1,0 +1,263 @@
+1. Introduction
+1.1 Purpose
+
+The purpose of this document is to define the functional and non-functional requirements for a Clinic Management System (CMS) that helps manage patients, appointments, medical visits, billing, accounting, and clinic inventory.
+
+1.2 Scope
+
+The system will be used in medical clinics to:
+
+Manage patients and appointments
+
+Support doctors during medical visits
+
+Handle billing and payments
+
+Allow call center staff to register patients remotely
+
+Manage clinic inventory and supplies
+
+Generate financial and operational reports
+
+The system will be built using Laravel (Backend) + Blade (Frontend).
+
+2. User Roles
+Role	Description
+Admin	Full system access
+Doctor	Medical diagnosis and prescriptions
+Receptionist	Patient registration and appointments
+Call Center	Patient registration and appointment booking
+Accountant	Invoices, payments, and financial reports
+Storekeeper	Inventory and clinic supplies
+3. Functional Requirements
+3.1 Authentication & Authorization
+
+The system shall allow users to log in using email and password.
+
+The system shall restrict access based on user roles.
+
+The system shall allow users to log out.
+
+The system shall protect unauthorized access using role-based permissions.
+
+3.2 User Management (Admin)
+
+The system shall allow the admin to create new users.
+
+The system shall allow the admin to update user information.
+
+The system shall allow the admin to activate or deactivate users.
+
+The system shall assign roles to users.
+
+The system shall allow password reset.
+
+3.3 Patient Management
+
+The system shall allow receptionists and call center staff to create new patient records.
+
+The system shall store patient information:
+
+Full name
+
+National ID
+
+Phone number
+
+Gender
+
+Age
+
+Address
+
+Medical history
+
+The system shall allow updating patient information.
+
+The system shall allow searching patients by name or phone number.
+
+The system shall track who created the patient record.
+
+3.4 Appointment Management
+
+The system shall allow receptionists and call center staff to create appointments.
+
+Each appointment shall be linked to a patient and a doctor.
+
+The system shall prevent appointment time conflicts.
+
+The system shall support appointment statuses:
+
+Pending
+
+Confirmed
+
+Completed
+
+Canceled
+
+The system shall display daily schedules for doctors.
+
+The system shall track who created the appointment.
+
+3.5 Doctor & Medical Visits
+
+The system shall allow doctors to view their daily appointments.
+
+The system shall allow doctors to create medical visits.
+
+Each visit shall include:
+
+Diagnosis
+
+Notes
+
+Visit date
+
+The system shall allow doctors to view previous patient visits.
+
+A visit shall be linked to one appointment.
+
+3.6 Prescriptions
+
+The system shall allow doctors to create prescriptions.
+
+Each prescription shall contain multiple medicines.
+
+For each medicine, the system shall store:
+
+Dosage
+
+Frequency
+
+Duration
+
+The system shall allow printing prescriptions.
+
+Prescriptions shall be saved in the patient medical history.
+
+3.7 Billing & Invoices
+
+The system shall automatically generate an invoice after completing a visit.
+
+The system shall allow receptionists to create invoices.
+
+Each invoice shall include:
+
+Consultation fees
+
+Discounts (if any)
+
+Final amount
+
+The system shall support invoice statuses:
+
+Paid
+
+Unpaid
+
+The system shall allow printing invoices (thermal format).
+
+3.8 Payments (Accountant)
+
+The system shall allow accountants to record payments.
+
+The system shall support payment methods:
+
+Cash
+
+Credit Card
+
+The system shall link each payment to an invoice.
+
+The system shall record who received the payment.
+
+The system shall prevent duplicate payments for the same invoice.
+
+3.9 Inventory Management (Store)
+
+The system shall allow storekeepers to manage clinic items.
+
+The system shall store item details:
+
+Item name
+
+Category
+
+Quantity
+
+Minimum quantity
+
+Unit of measurement
+
+The system shall record inventory transactions:
+
+Incoming items
+
+Outgoing items
+
+The system shall generate low-stock alerts.
+
+The system shall track inventory usage.
+
+3.10 Reports
+
+The system shall generate daily financial reports.
+
+The system shall generate monthly revenue reports.
+
+The system shall generate doctor performance reports.
+
+The system shall generate inventory reports.
+
+Reports shall be exportable to PDF and Excel.
+
+3.11 Notifications
+
+The system shall notify doctors when a patient arrives.
+
+The system shall notify users when appointments are canceled.
+
+The system shall notify storekeepers when stock is low.
+
+4. Non-Functional Requirements
+
+The system shall be easy to use.
+
+The system shall support Arabic and English languages.
+
+The system shall ensure data security and confidentiality.
+
+The system shall provide fast response times.
+
+The system shall support daily database backups.
+
+The system shall be responsive on different screen sizes.
+
+5. System Constraints
+
+Backend Framework: Laravel
+
+Frontend: Blade Templates
+
+Database: MySQL
+
+Authentication: Laravel Auth & Policies
+
+Hosting: Shared or VPS Server
+
+6. Future Enhancements
+
+SMS appointment reminders
+
+Multi-clinic support
+
+Online payment gateway
+
+Electronic Medical Records (EMR)
+
+Mobile application integration
+
+7. Conclusion
+
+The Clinic Management System will provide a complete and scalable solution for managing medical clinics efficiently, covering patient care, administration, accounting, and inventory management.
