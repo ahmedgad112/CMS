@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'نظام إدارة العيادة')</title>
-    
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -36,12 +38,23 @@
             top: 0;
         }
 
-        .sidebar h4 {
+        .sidebar .sidebar-header-row {
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar .sidebar-header-row h4 {
             font-weight: 600;
             font-size: 1.25rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 0;
+            padding: 0;
+            border: none;
+            line-height: 1.3;
+        }
+
+        .sidebar .sidebar-logo {
+            object-fit: contain;
         }
 
         .sidebar .nav-link {
@@ -971,11 +984,12 @@
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 sidebar p-0" id="sidebar">
                 <div class="p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0">
-                            <i class="fas fa-hospital"></i> نظام إدارة العيادة
-                        </h4>
-                        <button class="btn-close btn-close-white d-md-none" id="closeSidebar" aria-label="Close"></button>
+                    <div class="d-flex justify-content-between align-items-center sidebar-header-row">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                            <img src="{{ asset('images/logo-icon-white.svg') }}" alt="" width="36" height="36" class="sidebar-logo flex-shrink-0" decoding="async">
+                            <h4 class="mb-0 text-truncate">نظام إدارة العيادة</h4>
+                        </div>
+                        <button class="btn-close btn-close-white d-md-none flex-shrink-0" id="closeSidebar" aria-label="إغلاق القائمة"></button>
                     </div>
                     <ul class="nav flex-column">
                         @if(auth()->user()->hasPermission('view_dashboard'))

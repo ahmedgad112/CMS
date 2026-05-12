@@ -40,6 +40,12 @@
         font-size: 2rem;
     }
 
+    .login-icon img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+    }
+
     .login-body {
         padding: 0 1.5rem 1.5rem;
     }
@@ -69,6 +75,11 @@
             height: 60px;
             font-size: 1.5rem;
             margin-bottom: 1rem;
+        }
+
+        .login-icon img {
+            width: 32px;
+            height: 32px;
         }
 
         .login-header h2 {
@@ -103,6 +114,11 @@
             height: 50px;
             font-size: 1.25rem;
         }
+
+        .login-icon img {
+            width: 28px;
+            height: 28px;
+        }
     }
 </style>
 
@@ -110,7 +126,7 @@
     <div class="login-card">
         <div class="login-header">
             <div class="login-icon">
-                <i class="fas fa-hospital"></i>
+                <img src="{{ asset('images/logo-icon-white.svg') }}" alt="" width="42" height="42" decoding="async">
             </div>
             <h2 class="mb-2 fw-bold" style="color: var(--primary-color);">نظام إدارة العيادة</h2>
             <p class="text-muted mb-0">تسجيل الدخول إلى حسابك</p>

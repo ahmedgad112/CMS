@@ -17,6 +17,22 @@
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
+        .header .print-logo {
+            height: 56px;
+            width: auto;
+            display: inline-block;
+            margin-bottom: 12px;
+            vertical-align: middle;
+        }
+        .header h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+        }
+        .header .clinic-name {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
         .invoice-info {
             display: flex;
             justify-content: space-between;
@@ -65,8 +81,9 @@
 </head>
 <body>
     <div class="header">
+        <img src="{{ asset('favicon.svg') }}" alt="شعار العيادة" class="print-logo">
         <h2>فاتورة</h2>
-        <p>نظام إدارة العيادة</p>
+        <p class="clinic-name">نظام إدارة العيادة</p>
     </div>
 
     <div class="invoice-info">
