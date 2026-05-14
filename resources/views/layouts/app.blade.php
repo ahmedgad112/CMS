@@ -1975,6 +1975,18 @@
                             </a>
                         </li>
                         @endif
+                        @if(auth()->user()->isAdmin())
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.edit') }}">
+                                <i class="fas fa-sliders-h"></i> إعدادات المنصة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}" href="{{ route('admin.activity-log.index') }}">
+                                <i class="fas fa-history"></i> سجل النشاط
+                            </a>
+                        </li>
+                        @endif
                         @if(auth()->user()->hasPermission('view_reports'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">

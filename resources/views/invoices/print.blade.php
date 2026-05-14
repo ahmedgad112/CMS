@@ -83,7 +83,7 @@
     <div class="header">
         <img src="{{ asset('favicon.svg') }}" alt="شعار العيادة" class="print-logo">
         <h2>فاتورة</h2>
-        <p class="clinic-name">نظام إدارة العيادة</p>
+        <p class="clinic-name">{{ $platformOrganizationName ?? config('app.name') }}</p>
     </div>
 
     <div class="invoice-info">

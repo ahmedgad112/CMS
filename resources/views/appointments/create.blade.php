@@ -154,8 +154,7 @@
                         <option value="">اختر العيادة (اختياري)</option>
                         @foreach($clinics ?? [] as $clinic)
                             <option value="{{ $clinic->id }}" {{ old('clinic_id') == $clinic->id ? 'selected' : '' }}>
-                                {{ $clinic->name }}@if($clinic->is_main) (الرئيسية)@endif@if($clinic->city) - {{ $clinic->city }}@endif
-                            </option>
+                                {{ $clinic->name }}{{ $clinic->is_main ? ' (الرئيسية)' : '' }}{{ $clinic->city ? ' - '.$clinic->city : '' }}</option>
                         @endforeach
                     </select>
                     @error('clinic_id')

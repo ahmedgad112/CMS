@@ -143,6 +143,11 @@ Route::middleware('auth')->group(function () {
         ]);
         Route::get('users/{user}/permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'userPermissions'])->name('users.permissions');
         Route::put('users/{user}/permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'updateUserPermissions'])->name('users.permissions.update');
+
+        Route::get('settings', [\App\Http\Controllers\Admin\PlatformSettingsController::class, 'edit'])->name('settings.edit');
+        Route::put('settings', [\App\Http\Controllers\Admin\PlatformSettingsController::class, 'update'])->name('settings.update');
+
+        Route::get('activity-log', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
     });
 
     // API: Get doctors of a specific clinic

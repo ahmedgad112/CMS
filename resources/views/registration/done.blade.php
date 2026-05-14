@@ -172,6 +172,7 @@
     <div class="reg-wrapper">
         <div class="success-card">
             <div class="success-icon"><i class="fas fa-check"></i></div>
+            <p class="mb-2 small text-muted fw-semibold">{{ $platformOrganizationName }}</p>
             <h1>تم إرسال طلبك بنجاح!</h1>
             <p class="lead">شكراً لتسجيلك. سيتم التواصل معك قريباً لتأكيد ميعاد الكشف.</p>
 

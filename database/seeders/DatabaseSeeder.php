@@ -65,5 +65,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'storekeeper',
             'is_active' => true,
         ]);
+
+        $this->call(EgyptianDummyDataSeeder::class);
     }
 }

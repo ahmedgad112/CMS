@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -42,11 +41,11 @@ return new class extends Migration
     {
         $conn = Schema::getConnection();
         $dbName = $conn->getDatabaseName();
-        $foreignKeys = $conn->select("
+        $foreignKeys = $conn->select('
             SELECT CONSTRAINT_NAME 
             FROM information_schema.KEY_COLUMN_USAGE 
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?
-        ", [$dbName, $table, $foreignKeyName]);
+        ', [$dbName, $table, $foreignKeyName]);
 
         return count($foreignKeys) > 0;
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AppointmentRequest;
 use App\Models\Clinic;
+use App\Models\PlatformSetting;
 use App\Models\Specialization;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,10 +16,31 @@ class PatientRegistrationController extends Controller
     private const SESSION_GUEST_KEY = 'registration.guest';
 
     /**
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response|null
+     */
+    private function blockIfOnlineBookingClosed()
+    {
+        if (PlatformSetting::getBool('public_online_booking_enabled', true)) {
+            return null;
+        }
+
+        $message = PlatformSetting::getValue('public_portal_disabled_notice')
+            ?: 'حجز المواعيد عبر الموقع غير متاح حالياً. نرجو التواصل مع العيادة.';
+
+        return response()->view('registration.disabled', [
+            'message' => $message,
+        ], 503);
+    }
+
+    /**
      * Show the public patient self-registration form.
      */
     public function showForm()
     {
+        if ($blocked = $this->blockIfOnlineBookingClosed()) {
+            return $blocked;
+        }
+
         return view('registration.form');
     }
 
@@ -27,6 +49,10 @@ class PatientRegistrationController extends Controller
      */
     public function register(Request $request)
     {
+        if ($blocked = $this->blockIfOnlineBookingClosed()) {
+            return $blocked;
+        }
+
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'phone_number' => [
@@ -85,6 +111,10 @@ class PatientRegistrationController extends Controller
      */
     public function showService()
     {
+        if ($blocked = $this->blockIfOnlineBookingClosed()) {
+            return $blocked;
+        }
+
         $guest = Session::get(self::SESSION_GUEST_KEY);
         if (! is_array($guest) || empty($guest['phone_number'])) {
             return redirect()->route('registration.form')
@@ -118,6 +148,10 @@ class PatientRegistrationController extends Controller
      */
     public function submitService(Request $request)
     {
+        if ($blocked = $this->blockIfOnlineBookingClosed()) {
+            return $blocked;
+        }
+
         $guest = Session::get(self::SESSION_GUEST_KEY);
         if (! is_array($guest) || empty($guest['phone_number'])) {
             return redirect()->route('registration.form')

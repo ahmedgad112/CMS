@@ -151,7 +151,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($payments as $payment)
+                    @php
+                        $paymentGroups = $payments->getCollection()
+                            ->groupBy(fn ($p) => $p->invoice->patient_id)
+                            ->sortByDesc(fn ($group) => $group->max('created_at'));
+                    @endphp
+                    @foreach($paymentGroups as $patientId => $patientPayments)
+                        @foreach($patientPayments->sortByDesc('created_at')->values() as $index => $payment)
                     <tr>
                         <td>{{ $payment->id }}</td>
                         <td>
@@ -160,10 +166,23 @@
                                 {{ $payment->invoice->invoice_number }}
                             </a>
                         </td>
-                        <td>
+                        @if($index === 0)
+                        <td rowspan="{{ $patientPayments->count() }}" class="bg-light align-middle">
                             <i class="fas fa-user me-1 text-muted"></i>
-                            {{ $payment->invoice->patient->full_name }}
+                            <a href="{{ route('invoices.index', ['patient_id' => $patientId]) }}"
+                               class="text-decoration-none fw-semibold text-body"
+                               title="عرض كل فواتير هذا المريض">
+                                {{ $payment->invoice->patient->full_name }}
+                            </a>
+                            @if($patientPayments->count() > 1)
+                                <div class="mt-1">
+                                    <span class="badge bg-secondary bg-opacity-25 text-dark fw-normal">
+                                        {{ $patientPayments->count() }} دفعات
+                                    </span>
+                                </div>
+                            @endif
                         </td>
+                        @endif
                         <td class="fw-bold text-primary">{{ number_format($payment->amount, 2) }} ج.م</td>
                         <td>
                             @if($payment->payment_method == 'cash')
@@ -180,16 +199,17 @@
                         </td>
                         <td>
                             <i class="fas fa-user me-1 text-muted"></i>
-                            {{ $payment->receiver->name }}
+                            {{ optional($payment->receiver)->name ?? '—' }}
                         </td>
                         <td>
-                            <a href="{{ route('payments.show', $payment->id) }}" 
-                               class="btn btn-sm btn-info" 
+                            <a href="{{ route('payments.show', $payment->id) }}"
+                               class="btn btn-sm btn-info"
                                title="عرض التفاصيل">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
                     </tr>
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>

@@ -273,6 +273,7 @@
             <div class="brand-icon">
                 <i class="fas fa-hospital-user"></i>
             </div>
+            <p class="mb-1 small text-muted fw-semibold">{{ $platformOrganizationName }}</p>
             <h1>تسجيل مريض جديد</h1>
             <p>سجّل بياناتك للحجز في العيادة</p>
         </div>

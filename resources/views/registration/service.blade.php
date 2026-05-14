@@ -317,6 +317,7 @@
             <div class="brand-icon">
                 <i class="fas fa-stethoscope"></i>
             </div>
+            <p class="mb-1 small text-muted fw-semibold">{{ $platformOrganizationName }}</p>
             <h1>اختر الخدمة والطبيب</h1>
             <p>حدد نوع الخدمة والتخصص والطبيب المفضل (إن أمكن)</p>
         </div>

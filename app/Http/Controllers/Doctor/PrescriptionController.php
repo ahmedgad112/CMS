@@ -97,23 +97,9 @@ class PrescriptionController extends Controller
 
         // Update appointment status to completed
         $appointment->update(['status' => 'completed']);
+        $appointment->refresh();
 
-        // Create invoice automatically if it doesn't exist
-        if (! $appointment->invoice) {
-            $doctor = $appointment->doctor;
-            $fee = $appointment->appointment_type == 'checkup'
-                ? ($doctor->checkup_fee ?? 0)
-                : ($doctor->consultation_fee ?? 0);
-
-            \App\Models\Invoice::create([
-                'patient_id' => $appointment->patient_id,
-                'appointment_id' => $appointment->id,
-                'consultation_fee' => $fee,
-                'total_amount' => $fee,
-                'status' => 'unpaid',
-                'created_by' => auth()->id(),
-            ]);
-        }
+        \App\Services\AppointmentInvoiceFactory::ensureUnpaidInvoiceForAppointment($appointment, auth()->id());
 
         return redirect()->route('doctor.prescriptions.show', $prescription->id)
             ->with('success', 'تم إنشاء الروشته بنجاح.');
