@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema; // موجودة تمام
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // السطر ده هو اللي هيحل مشكلة الـ 1071 Specified key was too long
+        Schema::defaultStringLength(191);
+
         Blade::if('perm', function (?string $slug = null): bool {
             if ($slug === null || $slug === '') {
                 return false;
@@ -37,10 +41,11 @@ class AppServiceProvider extends ServiceProvider
         // Share clinic context with all views (for navbar switcher + indicators)
         View::composer('*', function ($view) {
             if (Auth::check()) {
+                $canSwitchClinic = ClinicContext::canSwitch();
                 $view->with('currentClinic', ClinicContext::current());
-                $view->with('canSwitchClinic', ClinicContext::canSwitch());
-                $view->with('availableClinics', ClinicContext::canSwitch()
-                    ? Clinic::where('is_active', true)->orderBy('is_main', 'desc')->orderBy('name')->get()
+                $view->with('canSwitchClinic', $canSwitchClinic);
+                $view->with('availableClinics', $canSwitchClinic
+                    ? Clinic::query()->active()->orderByDesc('is_main')->orderBy('name')->get()
                     : collect());
             }
         });
