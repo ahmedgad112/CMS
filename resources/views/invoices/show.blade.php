@@ -10,16 +10,16 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">معلومات الفاتورة</h5>
                 <div>
-                    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
-                    @if($invoice->status == 'unpaid')
+                    @if(auth()->user()->hasPermission('edit_invoices') && $invoice->status == 'unpaid')
                     <a href="{{ route('invoices.edit', $invoice->id) }}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i> تعديل
                     </a>
                     @endif
-                    @endif
+                    @if(auth()->user()->hasPermission('print_invoices'))
                     <a href="{{ route('invoices.print', $invoice->id) }}" class="btn btn-sm btn-primary" target="_blank">
                         <i class="fas fa-print"></i> طباعة
                     </a>
+                    @endif
                 </div>
             </div>
             <div class="card-body">
@@ -115,7 +115,7 @@
                 <h5 class="mb-0">إجراءات سريعة</h5>
             </div>
             <div class="card-body">
-                @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
+                @if(auth()->user()->hasPermission('create_payments'))
                 @if($invoice->status == 'unpaid')
                 <a href="{{ route('payments.create', ['invoice_id' => $invoice->id]) }}" class="btn btn-success w-100 mb-2">
                     <i class="fas fa-money-bill-wave"></i> تسجيل دفعة

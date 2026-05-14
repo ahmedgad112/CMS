@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'تفاصيل الوصفة الطبية')
 @section('page-title', 'تفاصيل الوصفة الطبية')
@@ -312,7 +312,7 @@
         border-radius: 8px;
         font-weight: 600;
         font-size: 0.9375rem;
-        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
     }
 
     .medicine-number-badge.medicine-number-black {

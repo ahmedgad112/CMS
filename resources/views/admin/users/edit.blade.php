@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'تعديل مستخدم')
 @section('page-title', 'تعديل مستخدم')
@@ -171,6 +171,26 @@
                     @enderror
                 </div>
 
+                <div class="col-md-6 mb-3" id="branch-clinic-field" style="display: {{ in_array(old('role', $user->role), ['admin', 'doctor'], true) ? 'none' : 'block' }};">
+                    <label for="clinic_id" class="form-label">
+                        <i class="fas fa-hospital text-info me-1"></i>
+                        فرع الموظف <small class="text-muted">(الفرع اللي بيشتغل فيه)</small>
+                    </label>
+                    <select class="form-select @error('clinic_id') is-invalid @enderror"
+                            id="clinic_id" name="clinic_id">
+                        <option value="">— كل الفروع —</option>
+                        @foreach($clinics ?? [] as $clinic)
+                            <option value="{{ $clinic->id }}" {{ old('clinic_id', $user->clinic_id) == $clinic->id ? 'selected' : '' }}>
+                                {{ $clinic->name }}@if($clinic->is_main) (الرئيسية)@endif@if($clinic->city) - {{ $clinic->city }}@endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('clinic_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <small class="text-muted">
+                        الموظف هيشوف بيانات الفرع ده بس لو حددته (المواعيد، الفواتير، المرضى).
+                    </small>
+                </div>
+
                 <div class="col-md-6 mb-3">
                     <div class="form-check mt-4">
                         <input class="form-check-input" 
@@ -184,6 +204,47 @@
                         </label>
                     </div>
                 </div>
+            </div>
+
+            <!-- Doctor Clinics Section -->
+            <div id="clinics-section" style="display: {{ old('role', $user->role) == 'doctor' ? 'block' : 'none' }};" class="mt-4 pt-4 border-top">
+                <h6 class="mb-3">
+                    <i class="fas fa-hospital me-2 text-info"></i>
+                    العيادات التي يعمل بها الطبيب
+                    <small class="text-muted fw-normal d-block mt-1">اختر كل العيادات اللي الطبيب بيشتغل فيها</small>
+                </h6>
+                @if(($clinics ?? collect())->count() > 0)
+                <div class="row g-2">
+                    @foreach($clinics as $clinic)
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-check doctor-clinic-card">
+                            <input class="form-check-input" type="checkbox"
+                                   id="clinic_{{ $clinic->id }}"
+                                   name="clinics[]"
+                                   value="{{ $clinic->id }}"
+                                   @if(in_array($clinic->id, old('clinics', $assignedClinicIds ?? []))) checked @endif>
+                            <label class="form-check-label w-100" for="clinic_{{ $clinic->id }}">
+                                <i class="fas fa-hospital text-primary me-1"></i>
+                                {{ $clinic->name }}
+                                @if($clinic->is_main)
+                                    <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">رئيسية</span>
+                                @endif
+                                @if($clinic->city)
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-map-marker-alt"></i> {{ $clinic->city }}
+                                    </small>
+                                @endif
+                            </label>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    لا توجد عيادات نشطة. يمكنك إضافة عيادات من <a href="{{ route('admin.clinics.create') }}">هنا</a>
+                </div>
+                @endif
             </div>
 
             <!-- Doctor Schedule Section -->
@@ -247,6 +308,34 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+.doctor-clinic-card {
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+    height: 100%;
+}
+
+.doctor-clinic-card:hover {
+    border-color: #0d9488;
+    background: #f8fafc;
+}
+
+.doctor-clinic-card:has(.form-check-input:checked) {
+    border-color: #0d9488;
+    background: #f0fdfa;
+}
+
+.doctor-clinic-card .form-check-input:checked ~ .form-check-label {
+    color: #0d9488;
+    font-weight: 600;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -274,14 +363,21 @@
         const departmentSelect = document.getElementById('department_id');
         const specializationSelect = document.getElementById('specialization_id');
 
+        const clinicsSection = document.getElementById('clinics-section');
+        const branchClinicField = document.getElementById('branch-clinic-field');
+
         function toggleSpecializationField() {
-            if (roleSelect.value === 'doctor') {
+            const role = roleSelect.value;
+
+            if (role === 'doctor') {
                 departmentField.style.display = 'block';
                 specializationField.style.display = 'block';
                 specializationTextField.style.display = 'block';
                 checkupFeeField.style.display = 'block';
                 consultationFeeField.style.display = 'block';
                 scheduleSection.style.display = 'block';
+                if (clinicsSection) clinicsSection.style.display = 'block';
+                if (branchClinicField) branchClinicField.style.display = 'none';
             } else {
                 departmentField.style.display = 'none';
                 specializationField.style.display = 'none';
@@ -289,6 +385,11 @@
                 checkupFeeField.style.display = 'none';
                 consultationFeeField.style.display = 'none';
                 scheduleSection.style.display = 'none';
+                if (clinicsSection) clinicsSection.style.display = 'none';
+
+                if (branchClinicField) {
+                    branchClinicField.style.display = (role && role !== 'admin') ? 'block' : 'none';
+                }
             }
         }
 

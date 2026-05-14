@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class PrescriptionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view_prescriptions')->only(['index', 'show']);
+        $this->middleware('permission:create_prescriptions')->only(['create', 'store']);
+        $this->middleware('permission:print_prescriptions')->only(['print']);
+    }
+
     public function index(Request $request)
     {
         $query = Prescription::with(['patient', 'appointment', 'doctor']);
@@ -16,13 +23,13 @@ class PrescriptionController extends Controller
         // Filter by doctor
         if ($request->filled('doctor_id')) {
             $query->where('doctor_id', $request->doctor_id);
-        } elseif (auth()->user()->isDoctor() && !auth()->user()->isAdmin()) {
+        } elseif (auth()->user()->isDoctor() && ! auth()->user()->isAdmin()) {
             // If user is a doctor (not admin), show only their prescriptions
             $query->where('doctor_id', auth()->id());
         }
 
         $prescriptions = $query->latest()->paginate(15);
-        
+
         // Get all doctors for filter
         $doctors = \App\Models\User::where('role', 'doctor')->where('is_active', true)->get();
 
@@ -32,13 +39,13 @@ class PrescriptionController extends Controller
     public function create(Request $request)
     {
         $appointment = null;
-        
+
         // Support appointment_id to create prescription directly from appointment
         if ($request->has('appointment_id')) {
             $appointment = Appointment::with(['patient'])->findOrFail($request->appointment_id);
-            
+
             // Verify doctor owns the appointment
-            if ($appointment->doctor_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            if ($appointment->doctor_id !== auth()->id() && ! auth()->user()->isAdmin()) {
                 abort(403, 'Unauthorized.');
             }
 
@@ -67,7 +74,7 @@ class PrescriptionController extends Controller
 
         $appointment = Appointment::findOrFail($validated['appointment_id']);
 
-        if ($appointment->doctor_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        if ($appointment->doctor_id !== auth()->id() && ! auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized.');
         }
 
@@ -92,12 +99,12 @@ class PrescriptionController extends Controller
         $appointment->update(['status' => 'completed']);
 
         // Create invoice automatically if it doesn't exist
-        if (!$appointment->invoice) {
+        if (! $appointment->invoice) {
             $doctor = $appointment->doctor;
-            $fee = $appointment->appointment_type == 'checkup' 
-                ? ($doctor->checkup_fee ?? 0) 
+            $fee = $appointment->appointment_type == 'checkup'
+                ? ($doctor->checkup_fee ?? 0)
                 : ($doctor->consultation_fee ?? 0);
-            
+
             \App\Models\Invoice::create([
                 'patient_id' => $appointment->patient_id,
                 'appointment_id' => $appointment->id,
@@ -114,22 +121,23 @@ class PrescriptionController extends Controller
 
     public function show(Prescription $prescription)
     {
-        if ($prescription->doctor_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        if ($prescription->doctor_id !== auth()->id() && ! auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized.');
         }
 
         $prescription->load(['patient', 'doctor', 'appointment', 'items']);
+
         return view('doctor.prescriptions.show', compact('prescription'));
     }
 
     public function print(Prescription $prescription)
     {
-        if ($prescription->doctor_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        if ($prescription->doctor_id !== auth()->id() && ! auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized.');
         }
 
         $prescription->load(['patient', 'doctor', 'items']);
+
         return view('doctor.prescriptions.print', compact('prescription'));
     }
 }
-

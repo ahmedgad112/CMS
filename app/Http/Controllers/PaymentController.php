@@ -4,13 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Support\ClinicContext;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view_payments')->only(['index', 'show']);
+        $this->middleware('permission:create_payments')->only(['create', 'store']);
+    }
+
     public function index(Request $request)
     {
         $query = Payment::with(['invoice.patient', 'receiver']);
+
+        // Scope payments to the active clinic via their invoice
+        if ($clinicId = ClinicContext::currentId()) {
+            $query->whereHas('invoice', function ($q) use ($clinicId) {
+                $q->where('clinic_id', $clinicId)
+                    ->orWhereHas('appointment', function ($qq) use ($clinicId) {
+                        $qq->where('clinic_id', $clinicId);
+                    });
+            });
+        }
 
         // Filter by invoice
         if ($request->filled('invoice_id')) {
@@ -33,18 +50,26 @@ class PaymentController extends Controller
         // Search by invoice number or patient name
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('invoice', function($q) use ($search) {
+            $query->whereHas('invoice', function ($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
-                  ->orWhereHas('patient', function($q2) use ($search) {
-                      $q2->where('full_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('patient', function ($q2) use ($search) {
+                        $q2->where('full_name', 'like', "%{$search}%");
+                    });
             });
         }
 
-        $payments = $query->latest()->paginate(20);
+        $payments = $query->latest()->paginate(20)->withQueryString();
 
         // Calculate statistics
         $statsQuery = Payment::query();
+        if ($clinicId = ClinicContext::currentId()) {
+            $statsQuery->whereHas('invoice', function ($q) use ($clinicId) {
+                $q->where('clinic_id', $clinicId)
+                    ->orWhereHas('appointment', function ($qq) use ($clinicId) {
+                        $qq->where('clinic_id', $clinicId);
+                    });
+            });
+        }
         if ($request->filled('invoice_id')) {
             $statsQuery->where('invoice_id', $request->invoice_id);
         }
@@ -59,11 +84,11 @@ class PaymentController extends Controller
         }
         if ($request->filled('search')) {
             $search = $request->search;
-            $statsQuery->whereHas('invoice', function($q) use ($search) {
+            $statsQuery->whereHas('invoice', function ($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
-                  ->orWhereHas('patient', function($q2) use ($search) {
-                      $q2->where('full_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('patient', function ($q2) use ($search) {
+                        $q2->where('full_name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -73,7 +98,16 @@ class PaymentController extends Controller
         ];
 
         // Get invoices for filter
-        $invoices = Invoice::with('patient')->latest()->get();
+        $invoicesFilterQuery = Invoice::with('patient')->latest();
+        if ($clinicId = ClinicContext::currentId()) {
+            $invoicesFilterQuery->where(function ($q) use ($clinicId) {
+                $q->where('clinic_id', $clinicId)
+                    ->orWhereHas('appointment', function ($qq) use ($clinicId) {
+                        $qq->where('clinic_id', $clinicId);
+                    });
+            });
+        }
+        $invoices = $invoicesFilterQuery->get();
 
         return view('payments.index', compact('payments', 'stats', 'invoices'));
     }
@@ -83,12 +117,23 @@ class PaymentController extends Controller
         $invoice = null;
         if ($request->has('invoice_id')) {
             $invoice = Invoice::with('patient')->findOrFail($request->invoice_id);
+            $this->assertInvoiceInScope($invoice);
         }
 
-        $invoices = Invoice::where('status', 'unpaid')
+        $invoicesQuery = Invoice::where('status', 'unpaid')
             ->with('patient')
-            ->latest()
-            ->get();
+            ->latest();
+
+        if ($clinicId = ClinicContext::currentId()) {
+            $invoicesQuery->where(function ($q) use ($clinicId) {
+                $q->where('clinic_id', $clinicId)
+                    ->orWhereHas('appointment', function ($qq) use ($clinicId) {
+                        $qq->where('clinic_id', $clinicId);
+                    });
+            });
+        }
+
+        $invoices = $invoicesQuery->get();
 
         return view('payments.create', compact('invoice', 'invoices'));
     }
@@ -103,7 +148,8 @@ class PaymentController extends Controller
         ]);
 
         $invoice = Invoice::findOrFail($validated['invoice_id']);
-        
+        $this->assertInvoiceInScope($invoice);
+
         // Calculate current paid amount
         $paidAmount = $invoice->paid_amount;
         $remainingAmount = $invoice->remaining_amount;
@@ -119,7 +165,7 @@ class PaymentController extends Controller
 
         // Update invoice status if fully paid
         $newPaidAmount = $paidAmount + $validated['amount'];
-        
+
         if ($newPaidAmount >= $invoice->total_amount) {
             $invoice->update(['status' => 'paid']);
         }
@@ -130,8 +176,28 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
-        $payment->load(['invoice.patient', 'receiver']);
+        $payment->load(['invoice.patient', 'invoice.appointment', 'receiver']);
+        $this->assertInvoiceInScope($payment->invoice);
+
         return view('payments.show', compact('payment'));
     }
-}
 
+    private function assertInvoiceInScope(?Invoice $invoice): void
+    {
+        if (! $invoice) {
+            return;
+        }
+
+        $clinicId = ClinicContext::currentId();
+        if (! $clinicId) {
+            return;
+        }
+
+        $belongs = (int) $invoice->clinic_id === $clinicId
+            || ($invoice->appointment && (int) $invoice->appointment->clinic_id === $clinicId);
+
+        if (! $belongs) {
+            abort(403, 'هذه الفاتورة تنتمي إلى فرع آخر.');
+        }
+    }
+}

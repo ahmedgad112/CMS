@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'الفواتير')
 @section('page-title', 'إدارة الفواتير')
@@ -9,7 +9,7 @@
         <h5 class="mb-0">
             <i class="fas fa-file-invoice me-2"></i> قائمة الفواتير
         </h5>
-        @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
+        @if(auth()->user()->hasPermission('create_invoices'))
         <a href="{{ route('invoices.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i> إنشاء فاتورة جديدة
         </a>
@@ -31,7 +31,7 @@
                                    placeholder="ابحث برقم الفاتورة..." 
                                    value="{{ request('search') }}">
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-12 col-sm-6 col-md-3">
                             <label class="form-label fw-semibold mb-2">
                                 <i class="fas fa-toggle-on text-warning me-1"></i> الحالة
                             </label>
@@ -41,7 +41,7 @@
                                 <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>غير مدفوعة</option>
                             </select>
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-12 col-sm-6 col-md-3">
                             <label class="form-label fw-semibold mb-2">
                                 <i class="fas fa-user text-info me-1"></i> المريض
                             </label>
@@ -56,7 +56,7 @@
                         </div>
                         <div class="col-md-3 col-12">
                             <label class="form-label fw-semibold mb-2">&nbsp;</label>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex flex-column flex-sm-row gap-2">
                                 <button type="submit" class="btn btn-primary flex-grow-1">
                                     <i class="fas fa-search me-1"></i> بحث
                                 </button>
@@ -104,7 +104,7 @@
 
         <!-- Summary Cards -->
         <div class="row g-4 mb-4">
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-primary">
                     <div class="stat-card-icon">
                         <i class="fas fa-file-invoice"></i>
@@ -116,7 +116,7 @@
                     <div class="stat-card-decoration"></div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-info">
                     <div class="stat-card-icon">
                         <i class="fas fa-money-bill-wave"></i>
@@ -131,7 +131,7 @@
                     <div class="stat-card-decoration"></div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-success">
                     <div class="stat-card-icon">
                         <i class="fas fa-check-circle"></i>
@@ -146,7 +146,7 @@
                     <div class="stat-card-decoration"></div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-danger">
                     <div class="stat-card-icon">
                         <i class="fas fa-exclamation-circle"></i>
@@ -201,7 +201,7 @@
     }
     
     .stat-card-primary .stat-card-icon {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
     }
     
     .stat-card-info .stat-card-icon {
@@ -236,7 +236,7 @@
     }
     
     .stat-card-primary .stat-card-value {
-        color: #2563eb;
+        color: #0d9488;
     }
     
     .stat-card-info .stat-card-value {
@@ -270,7 +270,7 @@
     }
     
     .stat-card-primary .stat-card-decoration {
-        background: #2563eb;
+        background: #0d9488;
     }
     
     .stat-card-info .stat-card-decoration {
@@ -402,7 +402,7 @@
                                     <i class="fas fa-eye"></i>
                                     <span class="d-none d-md-inline ms-1">عرض</span>
                                 </a>
-                                @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
+                                @if(auth()->user()->hasPermission('edit_invoices'))
                                 @if($invoice->status == 'unpaid')
                                 <a href="{{ route('invoices.edit', $invoice->id) }}" 
                                    class="btn btn-warning" 
@@ -411,6 +411,8 @@
                                     <span class="d-none d-md-inline ms-1">تعديل</span>
                                 </a>
                                 @endif
+                                @endif
+                                @if(auth()->user()->hasPermission('create_payments'))
                                 @if($invoice->remaining_amount > 0)
                                 <a href="{{ route('payments.create', ['invoice_id' => $invoice->id]) }}" 
                                    class="btn btn-success" 
@@ -420,6 +422,7 @@
                                 </a>
                                 @endif
                                 @endif
+                                @if(auth()->user()->hasPermission('print_invoices'))
                                 <a href="{{ route('invoices.print', $invoice->id) }}" 
                                    class="btn btn-primary" 
                                    title="طباعة"
@@ -427,6 +430,7 @@
                                     <i class="fas fa-print"></i>
                                     <span class="d-none d-md-inline ms-1">طباعة</span>
                                 </a>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -442,7 +446,7 @@
         @else
         <div class="alert alert-info text-center">
             <i class="fas fa-info-circle"></i> لا توجد فواتير مسجلة حالياً.
-            @if(auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist())
+            @if(auth()->user()->hasPermission('create_invoices'))
             <a href="{{ route('invoices.create') }}" class="alert-link">إنشاء فاتورة جديدة</a>
             @endif
         </div>

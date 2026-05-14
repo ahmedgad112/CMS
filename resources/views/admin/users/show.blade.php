@@ -61,15 +61,20 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
+                    @if(auth()->user()->hasPermission('edit_users'))
                     <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning">
                         <i class="fas fa-edit me-2"></i> تعديل البيانات
                     </a>
+                    @endif
+                    @if(auth()->user()->hasPermission('manage_roles'))
                     <a href="{{ route('admin.users.permissions', $user->id) }}" class="btn btn-info">
                         <i class="fas fa-key me-2"></i> إدارة الصلاحيات
                     </a>
+                    @endif
                     <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-right me-2"></i> العودة للقائمة
                     </a>
+                    @if(auth()->user()->hasPermission('delete_users'))
                     @if($user->id !== auth()->id())
                     <form action="{{ route('admin.users.destroy', $user->id) }}" 
                           method="POST" 
@@ -85,6 +90,7 @@
                         <i class="fas fa-info-circle me-2"></i> 
                         لا يمكنك حذف حسابك الخاص.
                     </div>
+                    @endif
                     @endif
                 </div>
             </div>

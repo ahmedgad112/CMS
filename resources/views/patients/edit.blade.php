@@ -155,7 +155,7 @@
                                 }
                             @endphp
                             @foreach($chronicDiseases as $key => $disease)
-                            <div class="col-md-3 col-sm-4 col-6">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <div class="form-check">
                                     <input class="form-check-input" 
                                            type="checkbox" 

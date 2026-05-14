@@ -40,7 +40,7 @@
         @if($payments->count() > 0)
         <!-- Statistics Cards -->
         <div class="row g-4 mb-4">
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-primary">
                     <div class="stat-card-icon">
                         <i class="fas fa-money-bill-wave"></i>
@@ -52,7 +52,7 @@
                     <div class="stat-card-decoration"></div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
                 <div class="stat-card stat-card-success">
                     <div class="stat-card-icon">
                         <i class="fas fa-coins"></i>

@@ -10,26 +10,60 @@
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background:
+            radial-gradient(circle at 20% 20%, rgba(13, 148, 136, 0.12) 0%, transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+            linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-container::before {
+        content: '\f0f1';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        font-size: 22rem;
+        color: rgba(13, 148, 136, 0.05);
+        top: -2rem;
+        left: -2rem;
+        pointer-events: none;
+    }
+
+    .login-container::after {
+        content: '\f7e4';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        font-size: 18rem;
+        color: rgba(6, 182, 212, 0.06);
+        bottom: -3rem;
+        right: -3rem;
+        pointer-events: none;
     }
 
     .login-card {
         width: 100%;
-        max-width: 420px;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background: white;
+        max-width: 440px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 18px;
+        box-shadow: 0 12px 32px rgba(13, 148, 136, 0.15), 0 2px 8px rgba(13, 148, 136, 0.08);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
     }
 
     .login-header {
         text-align: center;
         padding: 2rem 1.5rem 1rem;
+        background: linear-gradient(180deg, rgba(240, 253, 250, 0.6) 0%, transparent 100%);
     }
 
     .login-icon {
-        width: 80px;
-        height: 80px;
+        width: 84px;
+        height: 84px;
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
         border-radius: 50%;
         display: flex;
@@ -38,11 +72,22 @@
         margin: 0 auto 1.5rem;
         color: white;
         font-size: 2rem;
+        box-shadow: 0 12px 28px rgba(13, 148, 136, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .login-icon::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+        z-index: -1;
     }
 
     .login-icon img {
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         object-fit: contain;
     }
 
@@ -53,8 +98,8 @@
     .login-footer {
         padding: 1rem 1.5rem;
         border-top: 1px solid var(--border-color);
-        background-color: #f8fafc;
-        border-radius: 0 0 12px 12px;
+        background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
+        border-radius: 0 0 18px 18px;
     }
 
     @media (max-width: 575.98px) {
@@ -201,6 +246,13 @@
                     </button>
                 </div>
             </form>
+
+            <div class="text-center mt-3 pt-3 border-top">
+                <p class="text-muted mb-2 small">مريض جديد؟</p>
+                <a href="{{ route('registration.form') }}" class="btn btn-outline-success">
+                    <i class="fas fa-user-plus me-2"></i> تسجيل مريض جديد وحجز موعد
+                </a>
+            </div>
         </div>
 
         <div class="login-footer">

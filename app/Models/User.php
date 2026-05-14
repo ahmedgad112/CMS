@@ -5,9 +5,11 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -27,6 +29,7 @@ class User extends Authenticatable
         'specialization',
         'department_id',
         'specialization_id',
+        'clinic_id',
         'checkup_fee',
         'consultation_fee',
         'is_active',
@@ -72,7 +75,6 @@ class User extends Authenticatable
         return $this->hasMany(Appointment::class, 'created_by');
     }
 
-
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class, 'doctor_id');
@@ -108,6 +110,17 @@ class User extends Authenticatable
         return $this->belongsTo(Specialization::class);
     }
 
+    public function clinics(): BelongsToMany
+    {
+        return $this->belongsToMany(Clinic::class, 'clinic_user', 'user_id', 'clinic_id')
+            ->withTimestamps();
+    }
+
+    public function clinic(): BelongsTo
+    {
+        return $this->belongsTo(Clinic::class);
+    }
+
     // Helper methods
     public function isAdmin(): bool
     {
@@ -141,12 +154,26 @@ class User extends Authenticatable
 
     public function canManagePatients(): bool
     {
-        return in_array($this->role, ['admin', 'receptionist', 'call_center']);
+        return $this->hasAnyPermission(['create_patients', 'edit_patients', 'delete_patients']);
     }
 
     public function canManageAppointments(): bool
     {
-        return in_array($this->role, ['admin', 'receptionist', 'call_center']);
+        return $this->hasAnyPermission(['create_appointments', 'edit_appointments', 'delete_appointments']);
+    }
+
+    /**
+     * @param  list<string>  $slugs
+     */
+    public function hasAnyPermission(array $slugs): bool
+    {
+        foreach ($slugs as $slug) {
+            if ($this->hasPermission($slug)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Permission methods
@@ -157,7 +184,7 @@ class User extends Authenticatable
             return true;
         }
 
-        return \DB::table('role_permissions')
+        return DB::table('role_permissions')
             ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
             ->where('role_permissions.role', $this->role)
             ->where('permissions.slug', $permissionSlug)
@@ -166,7 +193,7 @@ class User extends Authenticatable
 
     public function permissions()
     {
-        return \DB::table('role_permissions')
+        return DB::table('role_permissions')
             ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
             ->where('role_permissions.role', $this->role)
             ->select('permissions.*')
@@ -175,7 +202,7 @@ class User extends Authenticatable
 
     public function getPermissionSlugs(): array
     {
-        return \DB::table('role_permissions')
+        return DB::table('role_permissions')
             ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
             ->where('role_permissions.role', $this->role)
             ->pluck('permissions.slug')

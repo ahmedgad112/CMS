@@ -5,8 +5,8 @@
 
 @section('content')
 <div class="row g-4">
-    <!-- Financial Reports Card -->
-    <div class="col-md-4 col-sm-6">
+    @if(auth()->user()->hasPermission('financial_reports'))
+    <div class="col-12 col-sm-6 col-md-4">
         <div class="card h-100">
             <div class="card-body text-center p-4">
                 <div class="mb-3">
@@ -20,9 +20,10 @@
             </div>
         </div>
     </div>
+    @endif
 
-    <!-- Doctor Performance Card -->
-    <div class="col-md-4 col-sm-6">
+    @if(auth()->user()->hasPermission('doctor_reports'))
+    <div class="col-12 col-sm-6 col-md-4">
         <div class="card h-100">
             <div class="card-body text-center p-4">
                 <div class="mb-3">
@@ -36,6 +37,15 @@
             </div>
         </div>
     </div>
+    @endif
+
+    @if(! auth()->user()->hasPermission('financial_reports') && ! auth()->user()->hasPermission('doctor_reports'))
+    <div class="col-12">
+        <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i> لا توجد تقارير متاحة لصلاحيات حسابك الحالية.
+        </div>
+    </div>
+    @endif
 
 </div>
 @endsection

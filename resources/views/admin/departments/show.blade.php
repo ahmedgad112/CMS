@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'تفاصيل القسم')
 @section('page-title', 'تفاصيل القسم')
@@ -246,7 +246,7 @@
 }
 
 .stat-card-primary .stat-card-icon {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
 }
 
 .stat-card-success .stat-card-icon {

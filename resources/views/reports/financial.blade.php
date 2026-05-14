@@ -11,8 +11,8 @@
     <div class="card-body">
         <!-- Filters -->
         <form method="GET" action="{{ route('reports.financial') }}" class="mb-4">
-            <div class="row">
-                <div class="col-md-4">
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
                     <label for="start_date" class="form-label">من تاريخ</label>
                     <input type="date" 
                            class="form-control" 
@@ -20,7 +20,7 @@
                            name="start_date" 
                            value="{{ request('start_date') }}">
                 </div>
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <label for="end_date" class="form-label">إلى تاريخ</label>
                     <input type="date" 
                            class="form-control" 
@@ -28,9 +28,9 @@
                            name="end_date" 
                            value="{{ request('end_date') }}">
                 </div>
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <label class="form-label">&nbsp;</label>
-                    <div>
+                    <div class="d-flex flex-column flex-sm-row gap-2 flex-wrap">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i> بحث
                         </button>
@@ -43,8 +43,8 @@
         </form>
 
         <!-- Summary Cards -->
-        <div class="row mb-4">
-            <div class="col-md-6">
+        <div class="row mb-4 g-3">
+            <div class="col-12 col-md-6">
                 <div class="card bg-success text-white">
                     <div class="card-body">
                         <h5 class="card-title">إجمالي الإيرادات</h5>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="card bg-danger text-white">
                     <div class="card-body">
                         <h5 class="card-title">المبلغ غير المدفوع</h5>

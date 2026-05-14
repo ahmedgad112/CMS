@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'تعديل القسم')
 @section('page-title', 'تعديل القسم')
@@ -120,8 +120,8 @@
 }
 
 .form-control-lg:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.1);
+    border-color: #0d9488;
+    box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.1);
 }
 
 .form-check-input {

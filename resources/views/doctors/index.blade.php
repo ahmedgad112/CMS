@@ -58,7 +58,7 @@
                                     @endif
                                 </select>
                             </div>
-                            <div class="col-md-2 col-6">
+                            <div class="col-md-2 col-12 col-sm-6">
                                 <label class="form-label fw-semibold mb-2">
                                     <i class="fas fa-info-circle text-warning me-1"></i> الحالة
                                 </label>
@@ -68,9 +68,9 @@
                                     <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>غير نشط</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 col-6">
+                            <div class="col-md-3 col-12 col-sm-6">
                                 <label class="form-label fw-semibold mb-2 d-block">&nbsp;</label>
-                                <div class="d-flex gap-2">
+                                <div class="d-flex flex-column flex-sm-row gap-2">
                                     <button type="submit" class="btn btn-primary flex-grow-1">
                                         <i class="fas fa-search me-2"></i> بحث
                                     </button>
@@ -135,7 +135,7 @@
         @if ($doctors->count() > 0)
             <div class="row g-4">
                 @foreach ($doctors as $doctor)
-                    <div class="col-md-6 col-lg-4">
+                    <div class="col-12 col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm border-0" style="transition: transform 0.2s;">
                             <div class="card-body">
                                 <div class="d-flex align-items-start mb-3">

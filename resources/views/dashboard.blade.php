@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="row g-4">
-    <div class="col-md-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-warning">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-info">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -48,7 +48,7 @@
     </div>
 
     @if(auth()->user()->isDoctor())
-    <div class="col-md-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-success">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -63,8 +63,8 @@
     </div>
     @endif
 
-    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
-    <div class="col-md-3 col-sm-6">
+    @if(auth()->user()->hasPermission('financial_reports'))
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-success">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -77,8 +77,10 @@
             </div>
         </div>
     </div>
+    @endif
 
-    <div class="col-md-3 col-sm-6">
+    @if(auth()->user()->hasPermission('view_invoices'))
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-danger">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -91,8 +93,10 @@
             </div>
         </div>
     </div>
+    @endif
 
-    <div class="col-md-3 col-sm-6">
+    @if(auth()->user()->hasPermission('financial_reports'))
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="card text-white bg-primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -120,8 +124,8 @@
             </div>
             <div class="card-body p-4">
                 <div class="row g-4">
-                    @if(auth()->user()->canManagePatients())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('create_patients'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('patients.create') }}" class="quick-action-card">
                             <div class="quick-action-icon bg-primary">
                                 <i class="fas fa-user-plus"></i>
@@ -137,8 +141,8 @@
                     </div>
                     @endif
 
-                    @if(auth()->user()->canManageAppointments())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('create_appointments'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('appointments.create') }}" class="quick-action-card">
                             <div class="quick-action-icon bg-success">
                                 <i class="fas fa-calendar-plus"></i>
@@ -155,8 +159,8 @@
                     @endif
 
 
-                    @if((auth()->user()->isAccountant() || auth()->user()->isAdmin() || auth()->user()->isReceptionist()))
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('create_invoices'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('invoices.create') }}" class="quick-action-card">
                             <div class="quick-action-icon bg-warning">
                                 <i class="fas fa-file-invoice"></i>
@@ -172,8 +176,8 @@
                     </div>
                     @endif
 
-                    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('create_payments'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('payments.create') }}" class="quick-action-card">
                             <div class="quick-action-icon bg-primary">
                                 <i class="fas fa-money-bill-wave"></i>
@@ -190,8 +194,8 @@
                     @endif
 
 
-                    @if(auth()->user()->isAdmin())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('create_users'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('admin.users.create') }}" class="quick-action-card">
                             <div class="quick-action-icon bg-danger">
                                 <i class="fas fa-user-plus"></i>
@@ -207,7 +211,8 @@
                     </div>
                     @endif
 
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('view_patients'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('patients.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-primary border-primary">
                                 <i class="fas fa-users"></i>
@@ -221,8 +226,10 @@
                             </div>
                         </a>
                     </div>
+                    @endif
 
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('view_appointments'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('appointments.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-success border-success">
                                 <i class="fas fa-calendar-check"></i>
@@ -236,9 +243,10 @@
                             </div>
                         </a>
                     </div>
+                    @endif
 
-                    @if(auth()->user()->isDoctor())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->isDoctor() && auth()->user()->hasPermission('view_prescriptions'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('doctor.prescriptions.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-info border-info">
                                 <i class="fas fa-prescription"></i>
@@ -254,24 +262,8 @@
                     </div>
                     @endif
 
-                    @if(auth()->user()->isDoctor())
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                        <a href="{{ route('doctor.prescriptions.index') }}" class="quick-action-card outline">
-                            <div class="quick-action-icon bg-light text-warning border-warning">
-                                <i class="fas fa-prescription"></i>
-                            </div>
-                            <div class="quick-action-content">
-                                <h6 class="mb-1">الوصفات الطبية</h6>
-                                <small class="text-muted">قائمة الوصفات</small>
-                            </div>
-                            <div class="quick-action-arrow">
-                                <i class="fas fa-arrow-left"></i>
-                            </div>
-                        </a>
-                    </div>
-                    @endif
-
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    @if(auth()->user()->hasPermission('view_doctors'))
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('doctors.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-primary border-primary">
                                 <i class="fas fa-user-md"></i>
@@ -285,9 +277,10 @@
                             </div>
                         </a>
                     </div>
+                    @endif
 
                     @if(auth()->user()->hasPermission('view_invoices'))
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('invoices.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-info border-info">
                                 <i class="fas fa-file-invoice-dollar"></i>
@@ -304,7 +297,7 @@
                     @endif
 
                     @if(auth()->user()->hasPermission('view_reports'))
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ route('reports.index') }}" class="quick-action-card outline">
                             <div class="quick-action-icon bg-light text-secondary border-secondary">
                                 <i class="fas fa-chart-bar"></i>

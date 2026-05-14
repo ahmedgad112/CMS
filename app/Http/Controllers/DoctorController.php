@@ -7,13 +7,18 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view_doctors');
+    }
+
     public function index(Request $request)
     {
         $query = User::where('role', 'doctor');
 
         // البحث بالاسم
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         // البحث بالقسم
@@ -52,7 +57,7 @@ class DoctorController extends Controller
 
         $doctor->load(['department', 'specialization']);
         $doctor->loadCount(['doctorAppointments', 'prescriptions']);
-        
+
         // إحصائيات إضافية
         $stats = [
             'total_appointments' => $doctor->doctorAppointments()->count(),

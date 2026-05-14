@@ -15,11 +15,22 @@
     
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
+            --primary-color: #0d9488;
+            --primary-hover: #0f766e;
+            --primary-dark: #115e59;
+            --primary-light: #ccfbf1;
+            --primary-soft: #f0fdfa;
+            --accent-color: #06b6d4;
+            --accent-hover: #0891b2;
+            --bg-color: #f0fdfa;
+            --surface-color: #ffffff;
+            --text-color: #134e4a;
+            --text-muted: #64748b;
+            --border-color: #d1fae5;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #0ea5e9;
         }
 
         body {
@@ -27,61 +38,119 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* Sidebar */
         .sidebar {
             min-height: 100vh;
-            background-color: var(--primary-color);
+            background: linear-gradient(180deg, #0d9488 0%, #0f766e 60%, #115e59 100%);
             color: white;
             position: sticky;
             top: 0;
+            box-shadow: -4px 0 16px rgba(13, 148, 136, 0.15);
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .sidebar > div {
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar .sidebar-header-row {
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         .sidebar .sidebar-header-row h4 {
-            font-weight: 600;
-            font-size: 1.25rem;
+            font-weight: 700;
+            font-size: 1.2rem;
             margin: 0;
             padding: 0;
             border: none;
             line-height: 1.3;
+            letter-spacing: 0.2px;
         }
 
         .sidebar .sidebar-logo {
             object-fit: contain;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 4px;
         }
 
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            padding: 12px 16px;
-            margin: 4px 0;
-            border-radius: 8px;
-            transition: background-color 0.2s;
+            color: rgba(255, 255, 255, 0.88);
+            padding: 11px 14px;
+            margin: 3px 0;
+            border-radius: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 0.92rem;
+            position: relative;
         }
 
         .sidebar .nav-link i {
-            width: 20px;
+            width: 32px;
+            height: 32px;
             text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            transition: all 0.25s ease;
         }
 
         .sidebar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.12);
             color: white;
+            transform: translateX(-3px);
+        }
+
+        .sidebar .nav-link:hover i {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.18);
             color: white;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .nav-link.active::before {
+            content: '';
+            position: absolute;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: #ffffff;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .sidebar .nav-link.active i {
+            background: rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+        }
+
+        .sidebar .nav-item.mt-3.pt-3.border-top {
+            border-color: rgba(255, 255, 255, 0.18) !important;
         }
 
         /* Main Content */
@@ -91,39 +160,569 @@
             padding-bottom: 2rem;
         }
 
-        /* Navbar */
+        /* Navbar - Modern Design */
         .navbar {
             background: white;
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 0.75rem 1.5rem;
             margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .navbar > .container-fluid {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem 0.75rem;
+            max-width: 100%;
+        }
+
+        .navbar > .container-fluid > .d-flex.align-items-center.gap-3 {
+            flex: 1 1 auto;
+            min-width: 0;
         }
 
         .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .navbar-brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+        }
+
+        .navbar-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .navbar-brand-text small {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Mobile Menu Toggle - Enhanced */
+        .mobile-menu-toggle {
+            display: none;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35);
+        }
+
+        /* Navbar Quick Actions */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .navbar-icon-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .navbar-icon-btn:hover {
+            background: white;
+            border-color: var(--primary-color);
             color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.18);
+        }
+
+        .navbar-icon-btn .badge-dot {
+            position: absolute;
+            top: 8px;
+            left: 9px;
+            width: 9px;
+            height: 9px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Clinic Switcher */
+        .clinic-switcher {
+            position: relative;
+        }
+
+        .clinic-switcher-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.875rem;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1.5px solid #bfdbfe;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .clinic-switcher-toggle:hover,
+        .clinic-switcher.show .clinic-switcher-toggle {
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .clinic-switcher-toggle > i:first-child {
+            font-size: 1rem;
+        }
+
+        .clinic-switcher-text {
+            flex-direction: column;
+            line-height: 1.2;
+            text-align: right;
+        }
+
+        .clinic-switcher-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .clinic-switcher-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-color);
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .clinic-switcher-caret {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            transition: transform 0.2s;
+        }
+
+        .clinic-switcher.show .clinic-switcher-caret {
+            transform: rotate(180deg);
+        }
+
+        .clinic-switcher-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            min-width: 280px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1050;
+            padding: 0.5rem;
+        }
+
+        .clinic-switcher.show .clinic-switcher-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .clinic-switcher-header {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .clinic-switcher-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            color: #1e293b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .clinic-switcher-item:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .clinic-switcher-item.active {
+            background: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .clinic-switcher-item i:first-child {
+            width: 18px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .clinic-switcher-item.active i:first-child,
+        .clinic-switcher-item:hover i:first-child {
+            color: var(--primary-color);
+        }
+
+        /* Clinic Indicator (read-only for branch users) */
+        .clinic-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.875rem;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1.5px solid #5eead4;
+            border-radius: 10px;
+            color: #0f766e;
+        }
+
+        .clinic-indicator > i {
+            font-size: 1rem;
+        }
+
+        .clinic-indicator-label {
+            font-size: 0.65rem;
+            color: #14b8a6;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .clinic-indicator-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f766e;
+            line-height: 1.2;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Date Display */
+        .navbar-date {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.875rem;
+            background: #f1f5f9;
+            border-radius: 10px;
+            color: #475569;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .navbar-date i {
+            color: var(--primary-color);
+        }
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.375rem 0.75rem 0.375rem 0.5rem;
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .user-dropdown-toggle:hover,
+        .user-dropdown.show .user-dropdown-toggle {
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.18);
+        }
+
+        .user-avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            max-width: 130px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .user-caret {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            transition: transform 0.2s;
+            margin-right: 0.25rem;
+        }
+
+        .user-dropdown.show .user-caret {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            min-width: 260px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .user-dropdown.show .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown-header {
+            padding: 1rem;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-dropdown-header .user-avatar-circle {
+            width: 48px;
+            height: 48px;
+            font-size: 1.1rem;
+        }
+
+        .user-dropdown-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-dropdown-header-name {
+            font-weight: 700;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            margin-bottom: 0.125rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-dropdown-header-email {
+            font-size: 0.78rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-dropdown-body {
+            padding: 0.5rem;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: right;
+            cursor: pointer;
+        }
+
+        .user-dropdown-item i {
+            width: 18px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            transition: color 0.15s;
+        }
+
+        .user-dropdown-item:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .user-dropdown-item:hover i {
+            color: var(--primary-color);
+        }
+
+        .user-dropdown-item.danger:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .user-dropdown-item.danger:hover i {
+            color: #dc2626;
+        }
+
+        .user-dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 0.5rem 0;
+        }
+
+        /* Page Title with breadcrumb feel */
+        .page-title-wrapper {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .page-title-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 0.15rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .page-title-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
         }
 
         /* Cards */
         .card {
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             background: white;
             margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(13, 148, 136, 0.06);
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 18px rgba(13, 148, 136, 0.1);
         }
 
         .card-header {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
             padding: 1rem 1.5rem;
             border-bottom: none;
             font-weight: 600;
+            position: relative;
         }
 
         .card-header h5 {
             margin: 0;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .card-body {
@@ -178,7 +777,7 @@
 
         .btn:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
         }
 
         .btn:disabled,
@@ -190,12 +789,12 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, #1e40af 100%);
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
             color: white;
         }
 
@@ -394,7 +993,7 @@
         }
 
         .btn-link:hover {
-            background: rgba(37, 99, 235, 0.1);
+            background: rgba(13, 148, 136, 0.1);
             color: var(--primary-hover);
             transform: none;
             box-shadow: none;
@@ -411,7 +1010,7 @@
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
         }
 
         .form-label {
@@ -423,31 +1022,36 @@
         /* Tables */
         .table {
             border: 1px solid var(--border-color);
+            margin-bottom: 0;
         }
 
         .table thead {
-            background-color: #f1f5f9;
+            background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
         }
 
         .table thead th {
-            border-bottom: 2px solid var(--border-color);
-            padding: 0.75rem;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.875rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding: 0.85rem 0.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
         .table tbody tr {
             border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.15s ease;
         }
 
         .table tbody tr:hover {
-            background-color: #f8fafc;
+            background-color: #f0fdfa;
         }
 
         .table tbody td {
-            padding: 0.75rem;
+            padding: 0.85rem 0.75rem;
             vertical-align: middle;
+            color: #1f2937;
         }
 
         /* Badges */
@@ -493,7 +1097,8 @@
         /* Input Groups */
         .input-group .input-group-text {
             border: 1px solid var(--border-color);
-            background-color: #f8fafc;
+            background-color: var(--primary-soft);
+            color: var(--primary-dark);
         }
 
         /* Spacing */
@@ -544,26 +1149,57 @@
         /* Dashboard Cards */
         .card.text-white {
             border: none;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.12);
+        }
+
+        .card.text-white::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .card.text-white:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(13, 148, 136, 0.2);
+        }
+
+        .card.text-white .card-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card.text-white i {
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.18);
+            padding: 0.85rem;
+            border-radius: 12px;
+            backdrop-filter: blur(6px);
         }
 
         .card.text-white.bg-primary {
-            background-color: var(--primary-color) !important;
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
         }
 
         .card.text-white.bg-success {
-            background-color: #10b981 !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         }
 
         .card.text-white.bg-danger {
-            background-color: #ef4444 !important;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
         }
 
         .card.text-white.bg-warning {
-            background-color: #f59e0b !important;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
         }
 
         .card.text-white.bg-info {
-            background-color: #06b6d4 !important;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
         }
 
         /* Pagination */
@@ -572,22 +1208,27 @@
         }
 
         .page-link {
-            border-radius: 6px;
-            margin: 0 2px;
+            border-radius: 8px;
+            margin: 0 3px;
             border: 1px solid var(--border-color);
             color: var(--primary-color);
-            padding: 0.5rem 0.75rem;
+            padding: 0.5rem 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .page-link:hover {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
             border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
         }
 
         .page-item.active .page-link {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
         }
         
         /* Hide pagination arrows */
@@ -659,28 +1300,19 @@
             }
 
             .mobile-menu-toggle {
-                display: block;
+                display: inline-flex;
             }
 
-            .navbar-brand {
-                font-size: 1.25rem;
+            .page-title-text {
+                font-size: 1.05rem;
             }
 
-            .navbar .d-flex {
-                flex-wrap: wrap;
-                gap: 0.5rem !important;
-            }
-
-            .navbar .bg-light.rounded-pill {
-                padding: 0.5rem 1rem !important;
-            }
-
-            .navbar .bg-light.rounded-pill div {
-                font-size: 0.875rem;
-            }
-
-            .navbar .bg-light.rounded-pill small {
-                font-size: 0.75rem;
+            .navbar-actions {
+                gap: 0.375rem;
+                flex-basis: 100%;
+                justify-content: flex-end;
+                padding-top: 0.25rem;
+                border-top: 1px solid rgba(209, 250, 229, 0.6);
             }
         }
 
@@ -704,11 +1336,32 @@
             }
 
             .navbar {
-                padding: 0.75rem 1rem;
+                padding: 0.625rem 0.875rem;
             }
 
-            .navbar-brand {
-                font-size: 1.1rem;
+            .page-title-text {
+                font-size: 0.95rem;
+            }
+
+            .navbar-icon-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+            }
+
+            .user-avatar-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+
+            .user-dropdown-toggle {
+                padding: 0.25rem;
+            }
+
+            .user-dropdown-menu {
+                min-width: 240px;
+                left: -10px;
             }
 
             .btn-sm {
@@ -787,11 +1440,31 @@
             }
 
             .navbar {
-                padding: 0.5rem 0.75rem;
+                padding: 0.5rem 0.625rem;
             }
 
-            .navbar-brand {
+            .page-title-label {
+                display: none !important;
+            }
+
+            .page-title-text {
+                font-size: 0.875rem;
+            }
+
+            .mobile-menu-toggle {
+                width: 38px;
+                height: 38px;
                 font-size: 1rem;
+            }
+
+            .navbar-icon-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .user-dropdown-menu {
+                min-width: 220px;
+                left: -20px;
             }
 
             .btn-group {
@@ -841,19 +1514,21 @@
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
+            height: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: var(--primary-soft);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border-radius: 5px;
+            border: 2px solid var(--primary-soft);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
+            background: linear-gradient(180deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
         }
 
         /* Additional improvements */
@@ -915,15 +1590,6 @@
             .btn-group .btn:last-child {
                 margin-bottom: 0;
             }
-
-            .card-header .d-flex {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .card-header .btn {
-                width: 100%;
-            }
         }
 
         @media (max-width: 575.98px) {
@@ -948,6 +1614,217 @@
 
             .table .btn i {
                 font-size: 0.7rem;
+            }
+        }
+
+        /* —— Small screens: consistent layout across all pages —— */
+        @media (max-width: 767.98px) {
+            main.main-content > .container-fluid.px-4 {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .sidebar .p-4 {
+                padding: 1rem !important;
+            }
+
+            .card-header.d-flex.justify-content-between,
+            .card-header.d-flex {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0.75rem;
+            }
+
+            .card-header.d-flex > h1,
+            .card-header.d-flex > h2,
+            .card-header.d-flex > h3,
+            .card-header.d-flex > h4,
+            .card-header.d-flex > h5,
+            .card-header.d-flex > h6 {
+                min-width: 0;
+                width: 100%;
+                margin-bottom: 0 !important;
+            }
+
+            .card-header.d-flex > .btn,
+            .card-header.d-flex > a.btn,
+            .card-header.d-flex > .btn-group,
+            .card-header.d-flex > form {
+                width: 100%;
+                margin-top: 0 !important;
+            }
+
+            .card-header.d-flex > .btn-group .btn {
+                width: 100%;
+            }
+
+            /* Nested toolbars inside card headers (title row + actions) */
+            .card-header .btn:not(.btn-close),
+            .card-header a.btn {
+                max-width: 100%;
+            }
+
+            /* Icon + title rows: allow wrap; keep horizontal by default */
+            .card-header .d-flex.align-items-center {
+                flex-wrap: wrap;
+                row-gap: 0.35rem;
+                column-gap: 0.5rem;
+            }
+
+            .card-header .btn,
+            .card-header a.btn {
+                width: 100%;
+            }
+
+            .input-group {
+                flex-wrap: wrap;
+            }
+
+            .input-group > .form-control,
+            .input-group > .form-select {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            .card-body:has(> table) {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .card-body:has(> table) > table {
+                min-width: 520px;
+            }
+
+            .row.g-4 > [class*="col-"],
+            .row.g-3 > [class*="col-"] {
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            main.main-content > .container-fluid.px-4 {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+
+            .list-group-item.d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+
+            .badge {
+                white-space: normal;
+                text-align: center;
+                line-height: 1.3;
+            }
+
+            .table td,
+            .table th {
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+            .container:not(.container-fluid) {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Mobile: جداول البيانات كبطاقات (يُفعّل عبر JS بإضافة table--mobile-cards) */
+        @media (max-width: 767.98px) {
+            .table-responsive.table--mobile-cards {
+                overflow-x: visible !important;
+            }
+
+            table.table.table--mobile-cards {
+                border: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            table.table.table--mobile-cards thead {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+
+            table.table.table--mobile-cards tbody {
+                display: block;
+            }
+
+            table.table.table--mobile-cards tbody tr {
+                display: block;
+                background: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                margin-bottom: 0.85rem;
+                padding: 0.65rem 1rem;
+                box-shadow: 0 2px 10px rgba(13, 148, 136, 0.07);
+            }
+
+            table.table.table--mobile-cards tbody tr:last-child {
+                margin-bottom: 0;
+            }
+
+            table.table.table--mobile-cards tbody tr:hover {
+                transform: none !important;
+                background-color: var(--surface-color) !important;
+            }
+
+            table.table.table--mobile-cards tbody td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+                padding: 0.55rem 0 !important;
+                border: none !important;
+                border-bottom: 1px dashed rgba(148, 163, 184, 0.45) !important;
+                vertical-align: middle !important;
+            }
+
+            table.table.table--mobile-cards tbody td:last-child {
+                border-bottom: none !important;
+            }
+
+            table.table.table--mobile-cards tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                font-size: 0.78rem;
+                color: #64748b;
+                flex: 0 1 42%;
+                text-align: right;
+                line-height: 1.3;
+            }
+
+            table.table.table--mobile-cards tbody td:not([data-label])::before {
+                display: none;
+            }
+
+            table.table.table--mobile-cards tbody td:not([data-label]) {
+                justify-content: center;
+                text-align: center;
+            }
+
+            table.table.table--mobile-cards tbody td .d-flex {
+                justify-content: flex-end !important;
+                flex-wrap: wrap !important;
+                gap: 0.35rem !important;
+            }
+
+            table.table.table--mobile-cards .btn-group {
+                flex-direction: row !important;
+                width: auto !important;
+            }
+
+            table.table.table--mobile-cards .btn-group .btn {
+                width: auto !important;
+                margin-bottom: 0 !important;
             }
         }
 
@@ -982,7 +1859,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 sidebar p-0" id="sidebar">
+            <nav class="col-12 col-md-3 col-lg-2 sidebar p-0" id="sidebar">
                 <div class="p-4">
                     <div class="d-flex justify-content-between align-items-center sidebar-header-row">
                         <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
@@ -1013,11 +1890,35 @@
                             </a>
                         </li>
                         @endif
+                        @if(auth()->user()->hasPermission('view_appointment_requests'))
+                        @php
+                            $pendingReqQ = \App\Models\AppointmentRequest::query()->where('status', 'pending');
+                            if ($cid = \App\Support\ClinicContext::currentId()) {
+                                $pendingReqQ->where(function ($q) use ($cid) {
+                                    $q->where('preferred_clinic_id', $cid)
+                                        ->orWhereHas('appointment', function ($qq) use ($cid) {
+                                            $qq->where('clinic_id', $cid);
+                                        });
+                                });
+                            }
+                            $pendingRequestsCount = $pendingReqQ->count();
+                        @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('appointment-requests.*') ? 'active' : '' }}" href="{{ route('appointment-requests.index') }}">
+                                <i class="fas fa-inbox"></i> طلبات الحجز
+                                @if($pendingRequestsCount > 0)
+                                    <span class="badge bg-danger ms-auto">{{ $pendingRequestsCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        @endif
+                        @if(auth()->user()->hasPermission('view_doctors'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('doctors.*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
                                 <i class="fas fa-user-md"></i> الأطباء
                             </a>
                         </li>
+                        @endif
                         @if(auth()->user()->hasPermission('view_prescriptions'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('doctor.prescriptions.*') ? 'active' : '' }}" href="{{ route('doctor.prescriptions.index') }}">
@@ -1039,19 +1940,36 @@
                             </a>
                         </li>
                         @endif
-                        @if(auth()->user()->isAdmin())
+                        @if(auth()->user()->hasPermission('view_users'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                                 <i class="fas fa-user-cog"></i> إدارة المستخدمين
                             </a>
                         </li>
+                        @endif
+                        @if(auth()->user()->hasPermission('manage_roles'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.role-permissions.*') ? 'active' : '' }}" href="{{ route('admin.role-permissions.index') }}">
                                 <i class="fas fa-user-shield"></i> إدارة الأدوار والصلاحيات
                             </a>
+                        </li>
+                        @endif
+                        @if(auth()->user()->hasPermission('manage_clinics'))
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.clinics.*') ? 'active' : '' }}" href="{{ route('admin.clinics.index') }}">
+                                <i class="fas fa-hospital"></i> إدارة العيادات
+                            </a>
+                        </li>
+                        @endif
+                        @if(auth()->user()->hasPermission('manage_departments'))
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
                                 <i class="fas fa-building"></i> إدارة الأقسام
                             </a>
+                        </li>
+                        @endif
+                        @if(auth()->user()->hasPermission('manage_specializations'))
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.specializations.*') ? 'active' : '' }}" href="{{ route('admin.specializations.index') }}">
                                 <i class="fas fa-stethoscope"></i> إدارة التخصصات
                             </a>
@@ -1074,44 +1992,143 @@
             </nav>
 
             <!-- Main Content -->
-            <main class="col-md-9 col-lg-10 main-content">
+            <main class="col-12 col-md-9 col-lg-10 main-content min-w-0">
                 <!-- Top Navbar -->
-                <nav class="navbar navbar-expand-lg navbar-light mb-4">
+                @php
+                    $roleNames = [
+                        'admin' => 'مدير النظام',
+                        'doctor' => 'طبيب',
+                        'receptionist' => 'موظف استقبال',
+                        'call_center' => 'مركز اتصال',
+                        'accountant' => 'محاسب',
+                        'storekeeper' => 'أمين مخزن'
+                    ];
+                    $currentUser = auth()->user();
+                    $userInitial = mb_substr($currentUser->name, 0, 1);
+                    $userRoleLabel = $roleNames[$currentUser->role] ?? $currentUser->role;
+                @endphp
+                <nav class="navbar navbar-expand-lg navbar-light">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center gap-3">
-                            <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button">
+                            <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="فتح القائمة">
                                 <i class="fas fa-bars"></i>
                             </button>
-                            <span class="navbar-brand mb-0 h1 fw-bold">@yield('page-title', 'لوحة التحكم')</span>
+                            <div class="page-title-wrapper">
+                                <span class="page-title-label d-none d-md-block">@yield('page-label', 'الصفحة الحالية')</span>
+                                <span class="page-title-text">@yield('page-title', 'لوحة التحكم')</span>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <a href="{{ route('profile.show') }}" class="text-decoration-none">
-                                <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2">
-                                    <i class="fas fa-user-circle text-primary me-2" style="font-size: 1.25rem;"></i>
-                                    <div>
-                                        <div class="fw-semibold">{{ auth()->user()->name }}</div>
-                                        <small class="text-muted">
-                                            @php
-                                                $roleNames = [
-                                                    'admin' => 'مدير',
-                                                    'doctor' => 'طبيب',
-                                                    'receptionist' => 'موظف استقبال',
-                                                    'call_center' => 'مركز اتصال',
-                                                    'accountant' => 'محاسب',
-                                                    'storekeeper' => 'مخزن'
-                                                ];
-                                            @endphp
-                                            {{ $roleNames[auth()->user()->role] ?? auth()->user()->role }}
-                                        </small>
+                        <div class="navbar-actions">
+                            {{-- Clinic Switcher / Indicator --}}
+                            @if($canSwitchClinic ?? false)
+                                <div class="clinic-switcher" id="clinicSwitcher">
+                                    <button type="button" class="clinic-switcher-toggle" id="clinicSwitcherToggle">
+                                        <i class="fas fa-hospital"></i>
+                                        <div class="clinic-switcher-text d-none d-md-flex">
+                                            <span class="clinic-switcher-label">الفرع الحالي</span>
+                                            <span class="clinic-switcher-value">
+                                                {{ $currentClinic?->name ?? 'كل الفروع' }}
+                                            </span>
+                                        </div>
+                                        <i class="fas fa-chevron-down clinic-switcher-caret"></i>
+                                    </button>
+                                    <div class="clinic-switcher-menu">
+                                        <div class="clinic-switcher-header">
+                                            <i class="fas fa-hospital text-primary me-1"></i>
+                                            <span>اختر الفرع</span>
+                                        </div>
+                                        <form method="POST" action="{{ route('clinic.switch') }}" class="m-0">
+                                            @csrf
+                                            <button type="submit" name="clinic_id" value=""
+                                                    class="clinic-switcher-item {{ ! $currentClinic ? 'active' : '' }}">
+                                                <i class="fas fa-globe"></i>
+                                                <span>كل الفروع</span>
+                                                @if(! $currentClinic) <i class="fas fa-check ms-auto text-success"></i> @endif
+                                            </button>
+                                        </form>
+                                        @foreach($availableClinics ?? [] as $c)
+                                            <form method="POST" action="{{ route('clinic.switch') }}" class="m-0">
+                                                @csrf
+                                                <button type="submit" name="clinic_id" value="{{ $c->id }}"
+                                                        class="clinic-switcher-item {{ $currentClinic?->id === $c->id ? 'active' : '' }}">
+                                                    <i class="fas fa-hospital"></i>
+                                                    <div class="text-end flex-grow-1">
+                                                        <div class="fw-semibold">
+                                                            {{ $c->name }}
+                                                            @if($c->is_main)
+                                                                <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">رئيسية</span>
+                                                            @endif
+                                                        </div>
+                                                        @if($c->city)
+                                                            <small class="text-muted">{{ $c->city }}</small>
+                                                        @endif
+                                                    </div>
+                                                    @if($currentClinic?->id === $c->id) <i class="fas fa-check ms-auto text-success"></i> @endif
+                                                </button>
+                                            </form>
+                                        @endforeach
                                     </div>
                                 </div>
+                            @elseif(($currentClinic ?? null))
+                                <div class="clinic-indicator" title="أنت تعمل على هذا الفرع فقط">
+                                    <i class="fas fa-hospital"></i>
+                                    <div class="d-none d-md-flex flex-column">
+                                        <span class="clinic-indicator-label">الفرع</span>
+                                        <span class="clinic-indicator-value">{{ $currentClinic->name }}</span>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="navbar-date d-none d-xl-flex">
+                                <i class="fas fa-calendar-day"></i>
+                                <span id="currentDate">{{ \Carbon\Carbon::now()->translatedFormat('l، d F Y') }}</span>
+                            </div>
+
+                            <a href="{{ route('dashboard') }}" class="navbar-icon-btn d-none d-md-flex" title="لوحة التحكم">
+                                <i class="fas fa-home"></i>
                             </a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
-                                </button>
-                            </form>
+
+                            <div class="user-dropdown" id="userDropdown">
+                                <a href="#" class="user-dropdown-toggle" id="userDropdownToggle">
+                                    <div class="user-avatar-circle">{{ $userInitial }}</div>
+                                    <div class="user-info d-none d-sm-flex">
+                                        <span class="user-name">{{ $currentUser->name }}</span>
+                                        <span class="user-role">{{ $userRoleLabel }}</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down user-caret d-none d-sm-block"></i>
+                                </a>
+                                <div class="user-dropdown-menu">
+                                    <div class="user-dropdown-header">
+                                        <div class="user-avatar-circle">{{ $userInitial }}</div>
+                                        <div class="user-dropdown-header-info">
+                                            <div class="user-dropdown-header-name">{{ $currentUser->name }}</div>
+                                            <div class="user-dropdown-header-email">{{ $currentUser->email }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="user-dropdown-body">
+                                        <a href="{{ route('profile.show') }}" class="user-dropdown-item">
+                                            <i class="fas fa-user-circle"></i>
+                                            <span>الملف الشخصي</span>
+                                        </a>
+                                        <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
+                                            <i class="fas fa-user-edit"></i>
+                                            <span>تعديل البيانات</span>
+                                        </a>
+                                        <a href="{{ route('profile.edit') }}#password" class="user-dropdown-item">
+                                            <i class="fas fa-key"></i>
+                                            <span>تغيير كلمة المرور</span>
+                                        </a>
+                                        <div class="user-dropdown-divider"></div>
+                                        <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="user-dropdown-item danger">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                                <span>تسجيل الخروج</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </nav>
@@ -1209,6 +2226,121 @@
                 if (window.innerWidth >= 992) {
                     closeSidebarFunc();
                 }
+            });
+
+            // Clinic Switcher Toggle
+            const clinicSwitcher = document.getElementById('clinicSwitcher');
+            const clinicSwitcherToggle = document.getElementById('clinicSwitcherToggle');
+            if (clinicSwitcher && clinicSwitcherToggle) {
+                clinicSwitcherToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    clinicSwitcher.classList.toggle('show');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!clinicSwitcher.contains(e.target)) {
+                        clinicSwitcher.classList.remove('show');
+                    }
+                });
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        clinicSwitcher.classList.remove('show');
+                    }
+                });
+            }
+
+            // User Dropdown Toggle
+            const userDropdown = document.getElementById('userDropdown');
+            const userDropdownToggle = document.getElementById('userDropdownToggle');
+
+            if (userDropdownToggle && userDropdown) {
+                userDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('show');
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!userDropdown.contains(e.target)) {
+                        userDropdown.classList.remove('show');
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        userDropdown.classList.remove('show');
+                    }
+                });
+            }
+
+            function applyMobileTableCards() {
+                const main = document.querySelector('main.main-content');
+                if (!main) return;
+
+                const mobile = window.matchMedia('(max-width: 767.98px)').matches;
+
+                main.querySelectorAll('table.table').forEach(function(table) {
+                    if (table.closest('.modal')) return;
+                    if (table.classList.contains('no-mobile-cards')) return;
+                    if (table.id === 'appointment-schedule-table') return;
+                    if (table.classList.contains('schedule-table')) return;
+
+                    const thead = table.querySelector('thead');
+                    if (!thead) return;
+
+                    const headerRow = thead.querySelector('tr:last-of-type');
+                    if (!headerRow) return;
+
+                    const headerCells = headerRow.querySelectorAll('th');
+                    if (!headerCells.length) return;
+
+                    const headers = Array.prototype.map.call(headerCells, function(th) {
+                        return th.innerText.replace(/\s+/g, ' ').trim();
+                    });
+
+                    let wrap = table.parentElement;
+                    if (!wrap || !wrap.classList.contains('table-responsive')) {
+                        wrap = null;
+                    }
+
+                    if (mobile) {
+                        table.classList.add('table--mobile-cards');
+                        if (wrap) wrap.classList.add('table--mobile-cards');
+
+                        table.querySelectorAll('tbody tr').forEach(function(tr) {
+                            let col = 0;
+                            Array.prototype.forEach.call(tr.children, function(cell) {
+                                if (cell.tagName !== 'TD') return;
+
+                                var span = parseInt(cell.getAttribute('colspan') || '1', 10);
+                                if (isNaN(span) || span < 1) span = 1;
+
+                                var label = headers[col] || '';
+                                if (label && !cell.hasAttribute('data-label')) {
+                                    cell.setAttribute('data-label', label);
+                                    cell.dataset.mobileCardAuto = '1';
+                                }
+
+                                col += span;
+                            });
+                        });
+                    } else {
+                        table.classList.remove('table--mobile-cards');
+                        if (wrap) wrap.classList.remove('table--mobile-cards');
+
+                        table.querySelectorAll('td[data-mobile-card-auto="1"]').forEach(function(td) {
+                            td.removeAttribute('data-label');
+                            delete td.dataset.mobileCardAuto;
+                        });
+                    }
+                });
+            }
+
+            var mobileTableCardTimer;
+            applyMobileTableCards();
+            window.addEventListener('resize', function() {
+                clearTimeout(mobileTableCardTimer);
+                mobileTableCardTimer = setTimeout(applyMobileTableCards, 120);
             });
         });
     </script>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'إدارة الأدوار والصلاحيات')
 @section('page-title', 'إدارة الأدوار والصلاحيات')
@@ -260,7 +260,7 @@
     }
     
     .stat-card-primary .stat-card-icon {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
     }
     
     .stat-card-warning .stat-card-icon {
@@ -295,7 +295,7 @@
     }
     
     .stat-card-primary .stat-card-value {
-        color: #2563eb;
+        color: #0d9488;
     }
     
     .stat-card-warning .stat-card-value {
@@ -322,7 +322,7 @@
     }
     
     .stat-card-primary .stat-card-decoration {
-        background: #2563eb;
+        background: #0d9488;
     }
     
     .stat-card-warning .stat-card-decoration {
@@ -344,7 +344,7 @@
     }
 
     .role-name:hover {
-        color: #2563eb !important;
+        color: #0d9488 !important;
         transform: translateX(-2px);
     }
 
@@ -356,12 +356,12 @@
         padding: 0.5rem 1rem;
         background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
         border-radius: 8px;
-        border: 1px solid #7dd3fc;
+        border: 1px solid #5eead4;
     }
 
     .users-count-wrapper span {
         font-size: 1.1rem;
-        color: #0369a1;
+        color: #0f766e;
     }
 
     .table-responsive {

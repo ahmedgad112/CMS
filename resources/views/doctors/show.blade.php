@@ -4,8 +4,8 @@
 @section('page-title', 'تفاصيل الطبيب')
 
 @section('content')
-    <div class="row">
-        <div class="col-md-4">
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
@@ -80,17 +80,19 @@
             </div>
         </div>
 
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <!-- Recent Appointments -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">
                         <i class="fas fa-calendar-check me-2"></i> المواعيد الأخيرة
                     </h6>
+                    @if(auth()->user()->hasPermission('view_appointments'))
                     <a href="{{ route('appointments.index', ['doctor_id' => $doctor->id]) }}"
                         class="btn btn-sm btn-outline-primary">
                         عرض الكل
                     </a>
+                    @endif
                 </div>
                 <div class="card-body">
                     @php
@@ -144,10 +146,12 @@
                     <h6 class="mb-0">
                         <i class="fas fa-prescription me-2"></i> الوصفات الأخيرة
                     </h6>
-                    <a href="{{ route('doctor.prescriptions.index') }}"
+                    @if(auth()->user()->hasPermission('view_prescriptions'))
+                    <a href="{{ route('doctor.prescriptions.index', ['doctor_id' => $doctor->id]) }}"
                         class="btn btn-sm btn-outline-primary">
                         عرض الكل
                     </a>
+                    @endif
                 </div>
                 <div class="card-body">
                     @php
@@ -194,7 +198,7 @@
                         <a href="{{ route('doctors.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-right me-2"></i> العودة للقائمة
                         </a>
-                        @if (auth()->user()->isAdmin())
+                        @if(auth()->user()->hasPermission('edit_users'))
                             <a href="{{ route('admin.users.edit', $doctor->id) }}" class="btn btn-warning">
                                 <i class="fas fa-edit me-2"></i> تعديل البيانات
                             </a>

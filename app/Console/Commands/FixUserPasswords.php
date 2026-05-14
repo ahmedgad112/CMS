@@ -28,22 +28,22 @@ class FixUserPasswords extends Command
     public function handle()
     {
         $password = $this->option('password');
-        
+
         $this->info('Updating passwords for all users...');
-        
+
         $users = User::all();
-        
+
         foreach ($users as $user) {
             // Set password directly - Laravel will hash it automatically due to 'hashed' cast
             $user->password = $password;
             $user->save();
-            
+
             $this->info("Updated password for: {$user->email}");
         }
-        
+
         $this->info("Successfully updated passwords for {$users->count()} users.");
         $this->info("All users now have password: {$password}");
-        
+
         return Command::SUCCESS;
     }
 }

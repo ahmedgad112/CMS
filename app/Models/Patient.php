@@ -18,6 +18,7 @@ class Patient extends Model
         'medical_history',
         'chronic_diseases',
         'created_by',
+        'clinic_id',
     ];
 
     public function creator(): BelongsTo
@@ -25,11 +26,15 @@ class Patient extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function clinic(): BelongsTo
+    {
+        return $this->belongsTo(Clinic::class);
+    }
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
     }
-
 
     public function prescriptions(): HasMany
     {
@@ -39,5 +44,10 @@ class Patient extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function appointmentRequests(): HasMany
+    {
+        return $this->hasMany(AppointmentRequest::class);
     }
 }

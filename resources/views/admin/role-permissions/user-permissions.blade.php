@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'صلاحيات المستخدم')
 @section('page-title', 'صلاحيات المستخدم')
@@ -182,7 +182,7 @@
     .user-avatar-large {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;

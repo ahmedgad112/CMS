@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
@@ -15,18 +16,21 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!auth()->check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
 
-        if (!$user->is_active) {
-            auth()->logout();
+        if (! $user->is_active) {
+            Auth::logout();
+
             return redirect()->route('login')->with('error', 'Your account has been deactivated.');
         }
 
-        if (!in_array($user->role, $roles)) {
+        $roles = array_values(array_filter(array_map('trim', $roles)));
+
+        if (! in_array($user->role, $roles, true)) {
             abort(403, 'Unauthorized access.');
         }
 

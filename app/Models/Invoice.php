@@ -16,6 +16,7 @@ class Invoice extends Model
         'total_amount',
         'status',
         'created_by',
+        'clinic_id',
     ];
 
     protected $casts = [
@@ -32,19 +33,19 @@ class Invoice extends Model
                 // Simple sequential numbering - get all invoice numbers and find the max numeric value
                 $allInvoices = static::pluck('invoice_number');
                 $maxNumber = 0;
-                
+
                 foreach ($allInvoices as $number) {
                     // Check if the invoice number is purely numeric
                     if (is_numeric($number)) {
-                        $numValue = (int)$number;
+                        $numValue = (int) $number;
                         if ($numValue > $maxNumber) {
                             $maxNumber = $numValue;
                         }
                     }
                 }
-                
+
                 $nextNumber = $maxNumber + 1;
-                $invoice->invoice_number = (string)$nextNumber;
+                $invoice->invoice_number = (string) $nextNumber;
             }
         });
     }
@@ -57,6 +58,11 @@ class Invoice extends Model
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function clinic(): BelongsTo
+    {
+        return $this->belongsTo(Clinic::class);
     }
 
     public function creator(): BelongsTo

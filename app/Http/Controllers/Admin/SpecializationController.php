@@ -9,23 +9,29 @@ use Illuminate\Http\Request;
 
 class SpecializationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage_specializations');
+    }
+
     public function index(Request $request)
     {
         $query = Specialization::with(['department']);
 
         if ($request->has('department_id') && $request->department_id) {
-            $query->where('department_id', $request->department_id);
+            $query->where('department_id', '=', $request->department_id, 'and');
         }
 
         $specializations = $query->withCount('doctors')->latest()->paginate(15);
-        $departments = Department::where('is_active', true)->get();
+        $departments = Department::where('is_active', '=', true, 'and')->get();
 
         return view('admin.specializations.index', compact('specializations', 'departments'));
     }
 
     public function create()
     {
-        $departments = Department::where('is_active', true)->get();
+        $departments = Department::where('is_active', '=', true, 'and')->get();
+
         return view('admin.specializations.create', compact('departments'));
     }
 
@@ -50,12 +56,14 @@ class SpecializationController extends Controller
     public function show(Specialization $specialization)
     {
         $specialization->load(['department', 'doctors']);
+
         return view('admin.specializations.show', compact('specialization'));
     }
 
     public function edit(Specialization $specialization)
     {
-        $departments = Department::where('is_active', true)->get();
+        $departments = Department::where('is_active', '=', true, 'and')->get();
+
         return view('admin.specializations.edit', compact('specialization', 'departments'));
     }
 
@@ -83,7 +91,7 @@ class SpecializationController extends Controller
             return back()->withErrors(['error' => 'لا يمكن حذف التخصص لأنه يحتوي على أطباء.']);
         }
 
-        $specialization->delete();
+        Specialization::destroy($specialization->getKey());
 
         return redirect()->route('admin.specializations.index')
             ->with('success', 'تم حذف التخصص بنجاح.');

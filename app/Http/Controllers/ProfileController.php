@@ -12,10 +12,10 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $user->load('schedules');
-        
+
         // Get statistics based on user role
         $stats = $this->getUserStats($user);
-        
+
         return view('profile.show', compact('user', 'stats'));
     }
 
@@ -23,6 +23,7 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $user->load('schedules');
+
         return view('profile.edit', compact('user'));
     }
 
@@ -37,7 +38,7 @@ class ProfileController extends Controller
             'specialization' => 'nullable|string|max:255',
         ]);
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
@@ -83,7 +84,7 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->isDoctor()) {
+        if (! $user->isDoctor()) {
             abort(403, 'Unauthorized.');
         }
 
@@ -96,19 +97,19 @@ class ProfileController extends Controller
         // Check for time overlap with existing schedules on the same day
         $overlapping = \App\Models\DoctorSchedule::where('doctor_id', $user->id)
             ->where('day_of_week', $validated['day_of_week'])
-            ->where(function($query) use ($validated) {
-                $query->where(function($q) use ($validated) {
+            ->where(function ($query) use ($validated) {
+                $query->where(function ($q) use ($validated) {
                     // New schedule starts during an existing schedule
                     $q->where('start_time', '<=', $validated['start_time'])
-                      ->where('end_time', '>', $validated['start_time']);
-                })->orWhere(function($q) use ($validated) {
+                        ->where('end_time', '>', $validated['start_time']);
+                })->orWhere(function ($q) use ($validated) {
                     // New schedule ends during an existing schedule
                     $q->where('start_time', '<', $validated['end_time'])
-                      ->where('end_time', '>=', $validated['end_time']);
-                })->orWhere(function($q) use ($validated) {
+                        ->where('end_time', '>=', $validated['end_time']);
+                })->orWhere(function ($q) use ($validated) {
                     // New schedule completely contains an existing schedule
                     $q->where('start_time', '>=', $validated['start_time'])
-                      ->where('end_time', '<=', $validated['end_time']);
+                        ->where('end_time', '<=', $validated['end_time']);
                 });
             })
             ->first();
@@ -143,7 +144,7 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->isDoctor() || $schedule->doctor_id !== $user->id) {
+        if (! $user->isDoctor() || $schedule->doctor_id !== $user->id) {
             abort(403, 'Unauthorized.');
         }
 
@@ -157,19 +158,19 @@ class ProfileController extends Controller
         $overlapping = \App\Models\DoctorSchedule::where('doctor_id', $user->id)
             ->where('day_of_week', $validated['day_of_week'])
             ->where('id', '!=', $schedule->id)
-            ->where(function($query) use ($validated) {
-                $query->where(function($q) use ($validated) {
+            ->where(function ($query) use ($validated) {
+                $query->where(function ($q) use ($validated) {
                     // New schedule starts during an existing schedule
                     $q->where('start_time', '<=', $validated['start_time'])
-                      ->where('end_time', '>', $validated['start_time']);
-                })->orWhere(function($q) use ($validated) {
+                        ->where('end_time', '>', $validated['start_time']);
+                })->orWhere(function ($q) use ($validated) {
                     // New schedule ends during an existing schedule
                     $q->where('start_time', '<', $validated['end_time'])
-                      ->where('end_time', '>=', $validated['end_time']);
-                })->orWhere(function($q) use ($validated) {
+                        ->where('end_time', '>=', $validated['end_time']);
+                })->orWhere(function ($q) use ($validated) {
                     // New schedule completely contains an existing schedule
                     $q->where('start_time', '>=', $validated['start_time'])
-                      ->where('end_time', '<=', $validated['end_time']);
+                        ->where('end_time', '<=', $validated['end_time']);
                 });
             })
             ->first();
@@ -200,7 +201,7 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->isDoctor() || $schedule->doctor_id !== $user->id) {
+        if (! $user->isDoctor() || $schedule->doctor_id !== $user->id) {
             abort(403, 'Unauthorized.');
         }
 
@@ -210,4 +211,3 @@ class ProfileController extends Controller
             ->with('success', 'تم حذف الموعد بنجاح.');
     }
 }
-

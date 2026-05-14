@@ -8,12 +8,18 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage_departments');
+    }
+
     public function index()
     {
         $departments = Department::withCount('doctors')
             ->with('specializations')
             ->latest()
             ->paginate(15);
+
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -42,6 +48,7 @@ class DepartmentController extends Controller
     public function show(Department $department)
     {
         $department->load(['doctors', 'specializations']);
+
         return view('admin.departments.show', compact('department'));
     }
 
@@ -73,7 +80,7 @@ class DepartmentController extends Controller
             return back()->withErrors(['error' => 'لا يمكن حذف القسم لأنه يحتوي على أطباء.']);
         }
 
-        $department->delete();
+        $department->deleteOrFail();
 
         return redirect()->route('admin.departments.index')
             ->with('success', 'تم حذف القسم بنجاح.');

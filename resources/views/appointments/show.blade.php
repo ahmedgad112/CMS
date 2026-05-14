@@ -4,7 +4,7 @@
 @section('page-title', 'تفاصيل الموعد')
 
 @section('content')
-@if(auth()->user()->canManageAppointments())
+@if(auth()->user()->hasPermission('edit_appointments'))
 <div class="card mb-4 border-0 shadow-sm">
     <div class="card-body py-3">
         <div class="d-flex flex-column flex-sm-row flex-wrap align-items-stretch align-items-sm-center gap-2 justify-content-sm-between">
@@ -163,6 +163,39 @@
                         </div>
                     </div>
 
+                    <!-- Clinic Info -->
+                    <div class="col-md-6">
+                        <div class="border-bottom pb-3">
+                            <label class="text-muted small d-block mb-2">
+                                <i class="fas fa-hospital me-1"></i> العيادة
+                            </label>
+                            @if($appointment->clinic)
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-hospital"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold">
+                                            {{ $appointment->clinic->name }}
+                                            @if($appointment->clinic->is_main)
+                                                <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65rem;">رئيسية</span>
+                                            @endif
+                                        </span>
+                                        @if($appointment->clinic->address)
+                                        <div class="small text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ $appointment->clinic->address }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <span class="text-muted small">لم يتم تحديد عيادة</span>
+                            @endif
+                        </div>
+                    </div>
+
                     <!-- Notes -->
                     @if($appointment->notes)
                     <div class="col-12">
@@ -237,6 +270,7 @@
                 <div class="d-flex flex-column gap-3">
                     @if(auth()->user()->isDoctor() && $appointment->doctor_id == auth()->id())
                         @if(!$appointment->prescription)
+                            @if(auth()->user()->hasPermission('create_prescriptions'))
                             <!-- Create Prescription -->
                             <a href="{{ route('doctor.prescriptions.create', ['appointment_id' => $appointment->id]) }}" class="quick-action-card">
                                 <div class="quick-action-icon bg-success">
@@ -250,7 +284,9 @@
                                     <i class="fas fa-arrow-left"></i>
                                 </div>
                             </a>
+                            @endif
                         @else
+                            @if(auth()->user()->hasPermission('view_prescriptions'))
                             <!-- View Prescription -->
                             <a href="{{ route('doctor.prescriptions.show', $appointment->prescription->id) }}" class="quick-action-card outline">
                                 <div class="quick-action-icon bg-light text-success border-success">
@@ -264,10 +300,11 @@
                                     <i class="fas fa-arrow-left"></i>
                                 </div>
                             </a>
+                            @endif
                         @endif
                     @endif
 
-                    @if($appointment->status == 'confirmed' && auth()->user()->canManageAppointments() && !auth()->user()->isDoctor())
+                    @if($appointment->status == 'confirmed' && auth()->user()->hasPermission('edit_appointments') && !auth()->user()->isDoctor())
                     <form action="{{ route('appointments.update', $appointment->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('PUT')
@@ -332,7 +369,7 @@
                         </div>
                     </a>
 
-                    @if(auth()->user()->canManageAppointments() && $appointment->status != 'completed' && $appointment->status != 'canceled')
+                    @if(auth()->user()->hasPermission('delete_appointments') && $appointment->status != 'completed' && $appointment->status != 'canceled')
                     <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')

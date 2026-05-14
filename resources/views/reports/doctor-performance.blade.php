@@ -11,8 +11,8 @@
     <div class="card-body">
         <!-- Filters -->
         <form method="GET" action="{{ route('reports.doctor-performance') }}" class="mb-4">
-            <div class="row">
-                <div class="col-md-6">
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
                     <label for="doctor_id" class="form-label">اختر الطبيب</label>
                     <select class="form-select" id="doctor_id" name="doctor_id">
                         <option value="">جميع الأطباء</option>
@@ -23,9 +23,9 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <label class="form-label">&nbsp;</label>
-                    <div>
+                    <div class="d-flex flex-column flex-sm-row gap-2 flex-wrap">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i> بحث
                         </button>

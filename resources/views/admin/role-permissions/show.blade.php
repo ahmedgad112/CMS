@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'تفاصيل الدور')
 @section('page-title', 'تفاصيل الدور')
@@ -276,7 +276,7 @@
     .user-avatar {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;

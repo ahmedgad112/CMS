@@ -9,9 +9,11 @@
         <h5 class="mb-0">
             <i class="fas fa-users-cog me-2"></i> قائمة المستخدمين
         </h5>
+        @if(auth()->user()->hasPermission('create_users'))
         <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i> إضافة مستخدم جديد
         </a>
+        @endif
     </div>
     <div class="card-body">
         <!-- Search and Filters -->
@@ -32,7 +34,7 @@
                                value="{{ request('search') }}">
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-12 col-sm-6">
                     <label class="form-label fw-semibold">
                         <i class="fas fa-user-tag me-1 text-muted"></i> الدور
                     </label>
@@ -46,7 +48,7 @@
                         <option value="storekeeper" {{ request('role') == 'storekeeper' ? 'selected' : '' }}>مخزن</option>
                     </select>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-12 col-sm-6">
                     <label class="form-label fw-semibold">
                         <i class="fas fa-toggle-on me-1 text-muted"></i> الحالة
                     </label>
@@ -149,12 +151,15 @@
                                     <i class="fas fa-eye"></i>
                                     <span class="d-none d-md-inline ms-1">عرض</span>
                                 </a>
+                                @if(auth()->user()->hasPermission('edit_users'))
                                 <a href="{{ route('admin.users.edit', $user->id) }}" 
                                    class="btn btn-warning" 
                                    title="تعديل">
                                     <i class="fas fa-edit"></i>
                                     <span class="d-none d-md-inline ms-1">تعديل</span>
                                 </a>
+                                @endif
+                                @if(auth()->user()->hasPermission('delete_users'))
                                 @if($user->id !== auth()->id())
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" 
                                       method="POST" 
@@ -167,6 +172,7 @@
                                         <span class="d-none d-md-inline ms-1">حذف</span>
                                     </button>
                                 </form>
+                                @endif
                                 @endif
                             </div>
                         </td>

@@ -145,6 +145,29 @@
                     </small>
                 </div>
 
+                <div class="col-md-6 mb-3">
+                    <label for="clinic_id" class="form-label">
+                        <i class="fas fa-hospital text-info me-1"></i>
+                        العيادة
+                    </label>
+                    <select class="form-select @error('clinic_id') is-invalid @enderror"
+                            id="clinic_id" name="clinic_id">
+                        <option value="">اختر العيادة (اختياري)</option>
+                        @foreach($clinics ?? [] as $clinic)
+                            <option value="{{ $clinic->id }}" {{ old('clinic_id', $appointment->clinic_id) == $clinic->id ? 'selected' : '' }}>
+                                {{ $clinic->name }}@if($clinic->is_main) (الرئيسية)@endif@if($clinic->city) - {{ $clinic->city }}@endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('clinic_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        ستظهر العيادات اللي الطبيب بيشتغل فيها بس
+                    </small>
+                </div>
+
                 <div class="col-md-12 mb-3">
                     <label class="form-label mb-3">
                         <i class="fas fa-calendar-alt text-primary me-1"></i> اختر التاريخ والوقت <span class="text-danger">*</span>
@@ -161,7 +184,7 @@
                     
                     <div id="appointment-schedule-table-container" style="display: none;">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="appointment-schedule-table">
+                            <table class="table table-bordered table-hover no-mobile-cards" id="appointment-schedule-table">
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width: 200px;">التاريخ</th>
@@ -638,6 +661,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    const clinicSelect = document.getElementById('clinic_id');
+    const initiallySelectedClinic = clinicSelect.value;
+
+    function filterClinicsByDoctor(doctorId) {
+        if (!doctorId) return;
+
+        fetch(`/api/doctors/${doctorId}/clinics`)
+            .then(r => r.json())
+            .then(data => {
+                clinicSelect.innerHTML = '';
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = data.clinics.length > 0 ? 'اختر العيادة (اختياري)' : 'لا توجد عيادات مرتبطة بالطبيب';
+                clinicSelect.appendChild(placeholder);
+
+                data.clinics.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    let text = c.name;
+                    if (c.is_main) text += ' (الرئيسية)';
+                    if (c.address) text += ` - ${c.address}`;
+                    opt.textContent = text;
+                    if (String(c.id) === String(initiallySelectedClinic)) opt.selected = true;
+                    clinicSelect.appendChild(opt);
+                });
+            })
+            .catch(() => {});
+    }
+
     doctorSelect.addEventListener('change', function() {
         selectedDate = null;
         selectedTime = null;
@@ -645,11 +697,13 @@ document.addEventListener('DOMContentLoaded', function() {
         appointmentTimeInput.value = '';
         selectedSlotInfo.style.display = 'none';
         loadDoctorSchedules(this.value);
+        filterClinicsByDoctor(this.value);
     });
 
     // Load schedules if doctor is pre-selected
     if (doctorSelect.value) {
         loadDoctorSchedules(doctorSelect.value);
+        filterClinicsByDoctor(doctorSelect.value);
     }
 });
 </script>

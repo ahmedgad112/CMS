@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +12,11 @@ use Illuminate\Validation\Rule;
 
 class RolePermissionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage_roles');
+    }
+
     /**
      * Display a listing of roles
      */
@@ -21,10 +26,10 @@ class RolePermissionController extends Controller
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -38,7 +43,8 @@ class RolePermissionController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::orderBy('category')->orderBy('name')->get()->groupBy('category');
+        $permissions = Permission::orderBy('category', 'asc')->orderBy('name', 'asc')->get()->groupBy('category');
+
         return view('admin.role-permissions.create', compact('permissions'));
     }
 
@@ -60,7 +66,7 @@ class RolePermissionController extends Controller
 
         $validated['is_system'] = $request->has('is_system') ? true : false;
 
-        DB::transaction(function () use ($validated, $request, &$role) {
+        DB::transaction(function () use ($validated, $request) {
             $role = Role::create([
                 'name' => $validated['name'],
                 'slug' => $validated['slug'],
@@ -92,7 +98,7 @@ class RolePermissionController extends Controller
     public function show(Role $role)
     {
         $role->load('users');
-        
+
         // Get permissions for this role
         $permissions = DB::table('role_permissions')
             ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
@@ -100,7 +106,7 @@ class RolePermissionController extends Controller
             ->select('permissions.*')
             ->get()
             ->groupBy('category');
-        
+
         return view('admin.role-permissions.show', compact('role', 'permissions'));
     }
 
@@ -109,17 +115,17 @@ class RolePermissionController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::orderBy('category')->orderBy('name')->get()->groupBy('category');
-        
+        $permissions = Permission::orderBy('category', 'asc')->orderBy('name', 'asc')->get()->groupBy('category');
+
         // Get selected permissions for this role
         $selectedPermissions = DB::table('role_permissions')
             ->where('role', $role->slug)
             ->pluck('permission_id')
             ->toArray();
-        
+
         // Get users with this role
         $usersWithRole = $role->users;
-        
+
         return view('admin.role-permissions.edit', compact('role', 'permissions', 'selectedPermissions', 'usersWithRole'));
     }
 
@@ -135,7 +141,7 @@ class RolePermissionController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('roles')->ignore($role->id),
-                'regex:/^[a-z_]+$/'
+                'regex:/^[a-z_]+$/',
             ],
             'description' => 'nullable|string',
             'is_system' => 'boolean',
@@ -165,7 +171,7 @@ class RolePermissionController extends Controller
                 DB::table('role_permissions')
                     ->where('role', $oldSlug)
                     ->update(['role' => $role->slug]);
-                
+
                 // Update users table
                 DB::table('users')
                     ->where('role', $oldSlug)
@@ -173,8 +179,8 @@ class RolePermissionController extends Controller
             }
 
             // Sync permissions - delete old ones first
-            DB::table('role_permissions')->where('role', $role->slug)->delete();
-            
+            DB::table('role_permissions')->where('role', '=', $role->slug, 'and')->delete(null);
+
             // Insert new permissions
             if ($request->has('permissions') && is_array($request->permissions)) {
                 $now = now();
@@ -215,10 +221,10 @@ class RolePermissionController extends Controller
 
         DB::transaction(function () use ($role) {
             // Delete role permissions
-            DB::table('role_permissions')->where('role', $role->slug)->delete();
-            
+            DB::table('role_permissions')->where('role', '=', $role->slug, 'and')->delete(null);
+
             // Delete role
-            $role->delete();
+            Role::destroy($role->getKey());
         });
 
         return redirect()->route('admin.role-permissions.index')
@@ -231,15 +237,15 @@ class RolePermissionController extends Controller
     public function userPermissions(User $user)
     {
         // Get all permissions grouped by category
-        $permissions = Permission::orderBy('category')->orderBy('name')->get()->groupBy('category');
-        
+        $permissions = Permission::orderBy('category', 'asc')->orderBy('name', 'asc')->get()->groupBy('category');
+
         // Get user's role permissions
         $userRolePermissions = DB::table('role_permissions')
             ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
             ->where('role_permissions.role', $user->role)
             ->pluck('permissions.id')
             ->toArray();
-        
+
         return view('admin.role-permissions.user-permissions', compact('user', 'permissions', 'userRolePermissions'));
     }
 
@@ -261,4 +267,3 @@ class RolePermissionController extends Controller
             ->with('success', 'تم تحديث دور المستخدم بنجاح.');
     }
 }
-

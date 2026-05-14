@@ -7,7 +7,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">قائمة المواعيد</h5>
-        @if(auth()->user()->canManageAppointments())
+        @if(auth()->user()->hasPermission('create_appointments'))
         <a href="{{ route('appointments.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> إضافة موعد جديد
         </a>
@@ -70,7 +70,20 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-12">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="fas fa-hospital text-info me-1"></i> العيادة
+                            </label>
+                            <select name="clinic_id" class="form-select">
+                                <option value="">جميع العيادات</option>
+                                @foreach($clinics ?? [] as $clinic)
+                                    <option value="{{ $clinic->id }}" {{ request('clinic_id') == $clinic->id ? 'selected' : '' }}>
+                                        {{ $clinic->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-2">
                             <label class="form-label fw-semibold mb-2">
                                 <i class="fas fa-tag text-success me-1"></i> نوع الموعد
                             </label>
@@ -80,7 +93,7 @@
                                 <option value="consultation" {{ request('appointment_type') == 'consultation' ? 'selected' : '' }}>استشارة</option>
                             </select>
                         </div>
-                        <div class="col-md-2 col-6">
+                        <div class="col-12 col-sm-6 col-md-2">
                             <label class="form-label fw-semibold mb-2">
                                 <i class="fas fa-info-circle text-warning me-1"></i> الحالة
                             </label>
@@ -92,7 +105,7 @@
                                 <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>ملغي</option>
                             </select>
                         </div>
-                        <div class="col-md-2 col-6">
+                        <div class="col-12 col-sm-6 col-md-2">
                             <label class="form-label fw-semibold mb-2 d-block">&nbsp;</label>
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fas fa-search me-2"></i> بحث
@@ -178,6 +191,7 @@
                         <th>#</th>
                         <th>المريض</th>
                         <th>الطبيب</th>
+                        <th>العيادة</th>
                         <th>التاريخ والوقت</th>
                         <th>النوع</th>
                         <th>الحالة</th>
@@ -194,6 +208,15 @@
                             </a>
                         </td>
                         <td>{{ $appointment->doctor->name }}</td>
+                        <td>
+                            @if($appointment->clinic)
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-hospital text-info me-1"></i> {{ $appointment->clinic->name }}
+                                </span>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
+                        </td>
                         <td>{{ $appointment->appointment_date->format('Y-m-d H:i') }}</td>
                         <td>
                             @if(($appointment->appointment_type ?? 'checkup') == 'checkup')
@@ -224,7 +247,7 @@
                                    title="عرض">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                @if(auth()->user()->canManageAppointments())
+                                @if(auth()->user()->hasPermission('edit_appointments'))
                                 <a href="{{ route('appointments.edit', $appointment->id) }}" 
                                    class="btn btn-sm btn-warning" 
                                    title="تعديل">
@@ -246,7 +269,7 @@
         @else
         <div class="alert alert-info text-center">
             <i class="fas fa-info-circle"></i> لا توجد مواعيد مسجلة حالياً.
-            @if(auth()->user()->canManageAppointments())
+            @if(auth()->user()->hasPermission('create_appointments'))
             <a href="{{ route('appointments.create') }}" class="alert-link">إضافة موعد جديد</a>
             @endif
         </div>
